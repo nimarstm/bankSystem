@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EliraPay — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="logo">
+    <div class="logo-icon"><i class="ti ti-building-bank"></i></div>
+    <span class="logo-text">EliraPay</span>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" id="tab-login" onclick="switchTab('login')">Password login</div>
+      <div class="tab" id="tab-otp" onclick="switchTab('otp')">OTP login</div>
+    </div>
+
+    <div class="msg error" id="global-error">
+      <i class="ti ti-alert-circle"></i>
+      <span id="global-error-text"></span>
+    </div>
+    <div class="msg success" id="global-success">
+      <i class="ti ti-circle-check"></i>
+      <span id="global-success-text"></span>
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div class="panel active" id="panel-login">
+      <div class="form-title">Welcome back</div>
+      <div class="form-sub">Sign in to your NovaPay account</div>
+
+      <div class="field">
+        <label for="login-phone">Phone number</label>
+        <div class="input-wrap">
+          <i class="ti ti-phone icon"></i>
+          <input type="tel" id="login-phone" placeholder="+98 000 000 0000" autocomplete="tel" />
+        </div>
+        <div class="field-error" id="err-login-phone">Please enter a valid phone number.</div>
+      </div>
+
+      <div class="field">
+        <label for="login-password">Password</label>
+        <div class="input-wrap">
+          <i class="ti ti-lock icon"></i>
+          <input type="password" id="login-password" placeholder="Your password" autocomplete="current-password" />
+          <button class="pw-toggle" type="button" onclick="togglePw('login-password', this)" tabindex="-1">
+            <i class="ti ti-eye"></i>
+          </button>
+        </div>
+        <div class="field-error" id="err-login-password">Please enter your password.</div>
+      </div>
+
+      <button class="submit-btn" id="btn-login" onclick="handleLogin()">
+        <div class="spinner" id="spin-login"></div>
+        <span id="btn-login-text">Sign in</span>
+      </button>
+
+      <div class="card-footer">Forgot your password? <a href="#">Reset it</a></div>
+    </div>
+
+    <!-- OTP PANEL -->
+    <div class="panel" id="panel-otp">
+      <div class="form-title">Sign in with OTP</div>
+      <div class="form-sub">We'll send a verification code to your phone</div>
+
+      <div class="field">
+        <label>Phone number</label>
+        <div class="otp-row">
+          <div class="input-wrap">
+            <i class="ti ti-phone icon"></i>
+            <input type="tel" id="otp-phone" placeholder="+98 000 000 0000" autocomplete="tel" />
+          </div>
+          <button class="send-btn" id="btn-send-otp" onclick="handleSendOtp()">Send code</button>
+        </div>
+        <div class="field-error" id="err-otp-phone">Please enter a valid phone number.</div>
+      </div>
+
+      <div class="otp-code-section" id="otp-code-section">
+        <label style="font-size:13px; font-weight:500; display:block; margin-bottom:10px;">Verification code</label>
+        <div class="otp-boxes">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp0" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp1" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp2" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp3" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp4" />
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp5" />
+        </div>
+        <div class="countdown" id="otp-countdown"></div>
+        <div class="otp-hint">Didn't receive it? <span onclick="resendOtp()">Resend</span></div>
+      </div>
+
+      <button class="submit-btn" id="btn-verify-otp" onclick="handleVerifyOtp()" style="margin-top:1.25rem;">
+        <div class="spinner" id="spin-otp"></div>
+        <span id="btn-otp-text">Verify &amp; sign in</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="footer-note">Protected by 256-bit encryption &nbsp;·&nbsp; EliraPay &copy; 2026</div>
+</div>
+
+<script src="./scripts.js"></script>
+</body>
+</html>
