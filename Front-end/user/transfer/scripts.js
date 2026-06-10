@@ -7,7 +7,7 @@
 
   const access  = localStorage.getItem('access_token');
   const refresh = localStorage.getItem('refresh_token');
-  //if (!access) window.location.href = '../../auth/auth.html';
+  if (!access) window.location.href = '../../auth/auth.html';
   const H = () => ({ 'Content-Type':'application/json','Authorization':`Bearer ${access}` });
 
   const userName = localStorage.getItem('user_name')||'';
@@ -90,21 +90,23 @@
     const spin=document.getElementById('confirm-spin');
     const icon=document.getElementById('confirm-icon');
     const txt=document.getElementById('confirm-text');
+    if(!accountId){ closeConfirm(); toast('No bank account found. Please contact support.'); return; }
+
     btn.disabled=true;spin.style.display='block';icon.style.display='none';txt.textContent='Sending…';
 
     const amount=parseFloat(document.getElementById('amount').value);
     const desc=document.getElementById('description').value.trim();
 
-    // Backend expects: source_account (id), destination_card or destination_iban, amount, description
+    // Backend expects: source_account_id (int), destination_card_number or destination_iban, amount, description
     let endpoint, payload;
     if(currentMethod==='card'){
       const dest=document.getElementById('card-dest').value.replace(/\s/g,'');
       endpoint=API.CARD_TRANSFER;
-      payload={ source_account: accountId, destination_card: dest, amount, description: desc };
+      payload={ source_account_id: parseInt(accountId), destination_card_number: dest, amount, description: desc };
     } else {
       const dest=document.getElementById('iban-dest').value.replace(/\s/g,'');
       endpoint=API.IBAN_TRANSFER;
-      payload={ source_account: accountId, destination_iban: dest, amount, description: desc };
+      payload={ source_account_id: parseInt(accountId), destination_iban: dest, amount, description: desc };
     }
 
     try{
@@ -126,7 +128,7 @@
     document.getElementById('form-body').style.display='none';
     document.getElementById('form-footer').style.display='none';
     document.getElementById('success-sub').textContent=`€${Number(amount).toFixed(2)} has been sent successfully.`;
-    const dest=currentMethod==='card'?payload.destination_card:payload.destination_iban;
+    const dest=currentMethod==='card'?payload.destination_card_number:payload.destination_iban;
     document.getElementById('success-detail').innerHTML=`
       <div class="success-detail-row"><span>Method</span><span>${currentMethod==='card'?'Card Transfer':'IBAN Transfer'}</span></div>
       <div class="success-detail-row"><span>To</span><span>${dest}</span></div>

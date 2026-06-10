@@ -61,6 +61,9 @@ class AuthService:
             code=code,
         )
 
+        if settings.DEBUG:
+            print(f"[DEV OTP] phone={user.phone}  code={code}")  # noqa: T201
+
         AuditLogService.info(
             actor=user,
             action="LOGIN_OTP_SENT",

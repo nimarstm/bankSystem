@@ -1,14 +1,13 @@
   // ── ENDPOINTS ─────────────────────────────────────────────────────────────
-  // GET /api/transactions/statement/<account_id>/
-  const accountId = localStorage.getItem('account_id') || '1';
   const API = {
-    STATEMENT: `/api/transactions/statement/${accountId}/`,
+    ACCOUNTS:  '/accounts/my/',
+    STATEMENT: (id) => `/api/transactions/statement/${id}/`,
     LOGOUT:    '/api/v1/auth/logout/',
   };
 
   const access  = localStorage.getItem('access_token');
   const refresh = localStorage.getItem('refresh_token');
-  //if (!access) window.location.href = '../../auth/auth.html';
+  if (!access) window.location.href = '../../auth/auth.html';
   const H = () => ({ 'Content-Type':'application/json','Authorization':`Bearer ${access}` });
 
   const userName = localStorage.getItem('user_name')||'';
@@ -44,9 +43,33 @@
   };
 
   // ── LOAD ──────────────────────────────────────────────────────────────────
-  async function loadStatement(){
+  async function resolveAccountId(){
+    let id = localStorage.getItem('account_id');
+    if(id) return id;
     try{
-      const res=await fetch(API.STATEMENT,{headers:H()});
+      const res = await fetch(API.ACCOUNTS, {headers:H()});
+      const data = await res.json();
+      const accounts = Array.isArray(data) ? data : (data.results||[]);
+      if(!accounts.length) return null;
+      const primary = accounts.find(a=>a.is_primary) || accounts[0];
+      localStorage.setItem('account_id', primary.id);
+      localStorage.setItem('account_number', primary.account_number||'');
+      return primary.id;
+    } catch { return null; }
+  }
+
+  async function loadStatement(){
+    const accountId = await resolveAccountId();
+    if(!accountId){
+      const msg=document.createElement('p');
+      msg.style.cssText='text-align:center;padding:2rem;color:var(--text-2);';
+      msg.textContent='No bank account found. Please contact support.';
+      const wrap=document.getElementById('table-wrap');
+      wrap.textContent=''; wrap.appendChild(msg);
+      applyFilters(); return;
+    }
+    try{
+      const res=await fetch(API.STATEMENT(accountId),{headers:H()});
       if(!res.ok) throw new Error();
       const data=await res.json();
       allTx=Array.isArray(data)?data:(data.results||data.transactions||[]);
