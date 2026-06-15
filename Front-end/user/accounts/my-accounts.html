@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>EliraPay — My Accounts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div><span class="sidebar-logo-text">EliraPay</span></div>
+  <div class="sidebar-section">Main</div>
+  <a class="nav-item" href="../../user/dashboard/dashboard.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+  <a class="nav-item" href="#"><i class="ti ti-bell"></i> Notifications</a>
+  <div class="sidebar-section">Services</div>
+  <a class="nav-item" href="../../user/transfer/transfer.html"><i class="ti ti-arrows-right-left"></i> Transfer Money</a>
+  <a class="nav-item" href="../../user/loan/loan.html"><i class="ti ti-coin"></i> Loans</a>
+  <a class="nav-item" href="../../user/installments/installments.html"><i class="ti ti-receipt"></i> Installments</a>
+  <a class="nav-item" href="../../user/statement/statement.html"><i class="ti ti-file-description"></i> Statement</a>
+  <div class="sidebar-section">Account</div>
+  <a class="nav-item active" href="../../user/accounts/my-accounts.html"><i class="ti ti-wallet"></i> My Accounts</a>
+  <a class="nav-item" href="../../user/profile/profile.html"><i class="ti ti-user-circle"></i> My Profile</a>
+  <div class="sidebar-section">Assistant</div>
+  <a class="nav-item" href="../../user/ai_agent/ai-chat.html"><i class="ti ti-robot"></i> Ai chat</a>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebar-avatar">--</div>
+      <div class="user-info"><div class="user-name" id="sidebar-name">My Account</div><div class="user-role">Customer</div></div>
+      <button class="logout-btn" onclick="logout()"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left"><h1>My Accounts</h1><p>View and manage all your bank accounts</p></div>
+    <div class="topbar-right">
+      <button class="add-btn" onclick="openCreateModal()"><i class="ti ti-plus"></i> Open New Account</button>
+      <a class="back-btn" href="../../user/dashboard/dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="accounts-grid" id="accounts-grid">
+      <div class="empty-state"><i class="ti ti-loader-2"></i><p>Loading your accounts…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- OPEN ACCOUNT MODAL -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Open New Account</div>
+      <div class="modal-sub">Choose a bank and account type to get started</div>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Bank</label>
+        <select id="m-bank">
+          <option value="">Loading banks…</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Account Type</label>
+        <select id="m-type">
+          <option value="SAVING">Saving</option>
+          <option value="CURRENT">Current</option>
+          <option value="BUSINESS">Business</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Currency</label>
+        <select id="m-currency">
+          <option value="EUR">EUR — Euro</option>
+          <option value="USD">USD — US Dollar</option>
+          <option value="TRY">TRY — Turkish Lira</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeCreateModal()">Cancel</button>
+      <button class="btn btn-primary" id="create-btn" onclick="createAccount()">
+        <div class="spinner" id="create-spin"></div>
+        <i class="ti ti-plus" id="create-icon"></i>
+        <span id="create-text">Open Account</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="scripts.js"></script>
+</body>
+</html>

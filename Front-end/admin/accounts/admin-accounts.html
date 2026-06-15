@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>EliraPay — Admin · Accounts</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 <aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div>
-    <span class="sidebar-logo-text">EliraPay</span>
-  </div>
+  <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div><span class="sidebar-logo-text">EliraPay</span></div>
   <div class="sidebar-role-badge"><i class="ti ti-shield-lock"></i> Admin Panel</div>
   <div class="sidebar-section">Overview</div>
   <a class="nav-item" href="../../admin/dashboard/admin-dashboard.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
@@ -24,11 +21,14 @@
   <a class="nav-item" href="../../admin/loans/admin-loans.html"><i class="ti ti-coin"></i> Loans</a>
   <a class="nav-item" href="../../admin/transactions/admin-transactions.html"><i class="ti ti-arrows-right-left"></i> Transactions</a>
   <a class="nav-item" href="../../admin/installments/admin-installments.html"><i class="ti ti-receipt"></i> Installments</a>
+  <a class="nav-item" href="../../admin/banks/admin-banks.html"><i class="ti ti-building-bank"></i> Banks</a>
   <div class="sidebar-section">Security</div>
   <a class="nav-item" href="../../admin/fraud/admin-fraud.html"><i class="ti ti-shield-exclamation"></i> Fraud Reports</a>
   <a class="nav-item" href="../../admin/auditlogs/admin-auditlogs.html"><i class="ti ti-file-analytics"></i> Audit Logs</a>
   <div class="sidebar-section">Communication</div>
   <a class="nav-item" href="../../admin/notifications/admin-notifications.html"><i class="ti ti-bell"></i> Notifications</a>
+  <div class="sidebar-section">AI</div>
+  <a class="nav-item" href="../../admin/ai-agent/admin-ai-agent.html"><i class="ti ti-robot"></i> AI Agent</a>
   <div class="sidebar-footer">
     <div class="sidebar-user">
       <div class="user-avatar-sm" id="sidebar-avatar">AD</div>
@@ -43,41 +43,22 @@
 
 <div class="main">
   <div class="topbar">
-    <div class="topbar-left">
-      <h1>Account Management</h1>
-      <p>View, filter and manage all bank accounts</p>
+    <div class="topbar-left"><h1>Account Management</h1><p>View, manage and open accounts for customers</p></div>
+    <div class="topbar-right">
+      <button class="add-btn" onclick="openOpenAccountModal()"><i class="ti ti-plus"></i> Open Account</button>
+      <a class="back-btn" href="../../admin/dashboard/admin-dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
     </div>
-    <a class="back-btn" href="../../admin/dashboard/admin-dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
   </div>
   <div class="content">
-
-    <!-- STATS -->
     <div class="stats-strip">
-      <div class="stat-card">
-        <div class="stat-icon blue"><i class="ti ti-wallet"></i></div>
-        <div><div class="stat-label">Total Accounts</div><div class="stat-val" id="stat-total">—</div></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon green"><i class="ti ti-database-dollar"></i></div>
-        <div><div class="stat-label">Total Balance</div><div class="stat-val" id="stat-balance">—</div></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon amber"><i class="ti ti-lock"></i></div>
-        <div><div class="stat-label">Blocked Balance</div><div class="stat-val" id="stat-blocked">—</div></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon red"><i class="ti ti-circle-x"></i></div>
-        <div><div class="stat-label">Closed Accounts</div><div class="stat-val" id="stat-closed">—</div></div>
-      </div>
+      <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-wallet"></i></div><div><div class="stat-label">Total Accounts</div><div class="stat-val" id="stat-total">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon green"><i class="ti ti-database-dollar"></i></div><div><div class="stat-label">Total Balance</div><div class="stat-val" id="stat-balance">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon amber"><i class="ti ti-lock"></i></div><div><div class="stat-label">Blocked Balance</div><div class="stat-val" id="stat-blocked">—</div></div></div>
+      <div class="stat-card"><div class="stat-icon red"><i class="ti ti-circle-x"></i></div><div><div class="stat-label">Closed Accounts</div><div class="stat-val" id="stat-closed">—</div></div></div>
     </div>
-
-    <!-- FILTERS -->
     <div class="filters-card">
       <div class="filters-row">
-        <div class="search-wrap">
-          <i class="ti ti-search"></i>
-          <input class="search-input" type="text" id="search" placeholder="Search by account number or IBAN…" />
-        </div>
+        <div class="search-wrap"><i class="ti ti-search"></i><input class="search-input" type="text" id="search" placeholder="Search by account number, IBAN, or customer ID…"/></div>
         <select class="filter-select" id="filter-status">
           <option value="">All Statuses</option>
           <option value="ACTIVE">Active</option>
@@ -100,13 +81,8 @@
         <button class="btn-filter ghost"   onclick="resetFilters()"><i class="ti ti-refresh"></i> Reset</button>
       </div>
     </div>
-
-    <!-- TABLE -->
     <div class="table-card">
-      <div class="table-hdr">
-        <span class="table-hdr-title">Accounts</span>
-        <span class="table-count" id="table-count">—</span>
-      </div>
+      <div class="table-hdr"><span class="table-hdr-title">Accounts</span><span class="table-count" id="table-count">—</span></div>
       <div id="table-wrap"><div class="empty-state"><i class="ti ti-loader-2"></i><p>Loading…</p></div></div>
       <div class="pagination" id="pagination" style="display:none;">
         <span class="pag-info" id="pag-info">—</span>
@@ -119,35 +95,54 @@
 <!-- DRAWER -->
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="acct-drawer">
-  <div class="drawer-header">
-    <span class="drawer-title">Account Detail</span>
-    <button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x"></i></button>
+  <div class="drawer-header"><span class="drawer-title">Account Detail</span><button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x"></i></button></div>
+  <div class="drawer-tab-bar">
+    <button class="drawer-tab active" id="dtab-detail"    onclick="switchDrawerTab('detail')"><i class="ti ti-wallet"></i> Detail</button>
+    <button class="drawer-tab"        id="dtab-statement" onclick="switchDrawerTab('statement')"><i class="ti ti-file-description"></i> Statement</button>
+    <button class="drawer-tab"        id="dtab-limits"    onclick="switchDrawerTab('limits')"><i class="ti ti-chart-bar"></i> Limits</button>
   </div>
-  <div class="drawer-body" id="drawer-body"><div class="empty-state"><i class="ti ti-loader-2"></i><p>Loading…</p></div></div>
+  <div class="drawer-panel active" id="dpanel-detail"><div id="drawer-detail-body"></div></div>
+  <div class="drawer-panel"        id="dpanel-statement"><div id="drawer-statement-body"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div></div>
+  <div class="drawer-panel"        id="dpanel-limits"><div id="drawer-limits-body"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div></div>
   <div class="drawer-footer" id="drawer-footer"></div>
 </div>
 
-<!-- AMOUNT MODAL (deposit / withdraw / block-balance / unblock-balance) -->
+<!-- AMOUNT MODAL -->
 <div class="modal-overlay" id="amount-modal">
   <div class="modal">
     <div class="modal-header" id="amount-modal-title">Deposit</div>
-    <div class="modal-body">
-      <div class="field">
-        <label>Amount</label>
-        <input type="number" id="modal-amount" placeholder="0.00" min="0.01" step="0.01" />
-        <div class="field-hint" id="amount-hint"></div>
-      </div>
-    </div>
+    <div class="modal-body"><div class="field"><label>Amount (€)</label><input type="number" id="modal-amount" placeholder="0.00" min="0.01" step="0.01"/></div></div>
     <div class="modal-footer">
       <button class="btn ghost" onclick="closeAmountModal()">Cancel</button>
-      <button class="btn primary" id="amount-confirm-btn" onclick="confirmAmount()">
-        <div class="spinner" id="amount-spin"></div>
-        <span id="amount-btn-text">Confirm</span>
+      <button class="btn primary" id="amount-btn" onclick="confirmAmount()">
+        <div class="spinner" id="amount-spin"></div><span id="amount-btn-text">Confirm</span>
       </button>
     </div>
   </div>
 </div>
 
+<!-- OPEN ACCOUNT MODAL -->
+<div class="modal-overlay" id="open-account-modal">
+  <div class="modal">
+    <div class="modal-header">Open Account for Customer</div>
+    <div class="modal-body">
+      <div class="field"><label>Customer ID</label><input type="number" id="oa-customer" placeholder="Enter customer user ID"/></div>
+      <div class="field"><label>Bank</label><select id="oa-bank"><option value="">Loading…</option></select></div>
+      <div class="field"><label>Account Type</label>
+        <select id="oa-type"><option value="SAVING">Saving</option><option value="CURRENT">Current</option><option value="BUSINESS">Business</option></select>
+      </div>
+      <div class="field"><label>Currency</label>
+        <select id="oa-currency"><option value="EUR">EUR</option><option value="USD">USD</option><option value="TRY">TRY</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn ghost" onclick="closeOpenAccountModal()">Cancel</button>
+      <button class="btn primary" id="oa-btn" onclick="confirmOpenAccount()">
+        <div class="spinner" id="oa-spin"></div><span id="oa-text"><i class="ti ti-plus"></i> Open Account</span>
+      </button>
+    </div>
+  </div>
+</div>
 <div class="toast-container" id="toast-container"></div>
 
 <script src="scripts.js"> </script>

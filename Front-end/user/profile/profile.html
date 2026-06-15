@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>EliraPay — My Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div><span class="sidebar-logo-text">EliraPay</span></div>
+  <div class="sidebar-section">Main</div>
+  <a class="nav-item" href="../../user/dashboard/dashboard.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+  <a class="nav-item" href="#"><i class="ti ti-bell"></i> Notifications</a>
+  <div class="sidebar-section">Services</div>
+  <a class="nav-item" href="../../user/transfer/transfer.html"><i class="ti ti-arrows-right-left"></i> Transfer Money</a>
+  <a class="nav-item" href="../../user/loan/loan.html"><i class="ti ti-coin"></i> Loans</a>
+  <a class="nav-item" href="../../user/installments/installments.html"><i class="ti ti-receipt"></i> Installments</a>
+  <a class="nav-item" href="../../user/statement/statement.html"><i class="ti ti-file-description"></i> Statement</a>
+  <div class="sidebar-section">Account</div>
+  <a class="nav-item" href="../../user/accounts/my-accounts.html"><i class="ti ti-wallet"></i> My Accounts</a>
+  <a class="nav-item active" href="../../user/profile/profile.html"><i class="ti ti-user-circle"></i> My Profile</a>
+  <div class="sidebar-section">Assistant</div>
+  <a class="nav-item" href="../../user/ai_agent/ai-chat.html"><i class="ti ti-robot"></i> Ai chat</a>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebar-avatar">--</div>
+      <div class="user-info"><div class="user-name" id="sidebar-name">My Account</div><div class="user-role">Customer</div></div>
+      <button class="logout-btn" onclick="logout()"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left"><h1>My Profile</h1><p>Manage your personal info, security and sessions</p></div>
+    <a class="back-btn" href="../../user/dashboard/dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
+  </div>
+  <div class="content">
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab-profile"   onclick="switchTab('profile')"><i class="ti ti-user"></i> Profile</button>
+      <button class="tab-btn"        id="tab-security"  onclick="switchTab('security')"><i class="ti ti-lock"></i> Security</button>
+      <button class="tab-btn"        id="tab-sessions"  onclick="switchTab('sessions')"><i class="ti ti-devices"></i> Sessions</button>
+      <button class="tab-btn"        id="tab-devices"   onclick="switchTab('devices')"><i class="ti ti-device-mobile"></i> Devices</button>
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="panel active" id="panel-profile">
+      <div class="card">
+        <div class="card-body">
+          <div class="profile-header">
+            <div class="profile-avatar-lg" id="profile-avatar-lg">--</div>
+            <div>
+              <div class="profile-name-big" id="profile-name-big">Loading…</div>
+              <div class="profile-role" id="profile-role-txt">Customer</div>
+              <div class="profile-badges">
+                <span class="badge active" id="profile-status-badge">Active</span>
+                <span class="badge verified" id="profile-verified-badge"><i class="ti ti-circle-check"></i> Verified</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="msg success" id="profile-success"><i class="ti ti-circle-check"></i> Profile updated successfully.</div>
+          <div class="msg error"   id="profile-error"><i class="ti ti-alert-circle"></i><span id="profile-error-text"></span></div>
+
+          <div class="fields-grid">
+            <div class="field full">
+              <label>Full Name</label>
+              <div class="input-wrap"><i class="ti ti-user pfx"></i><input type="text" id="p-fullname" placeholder="John Doe"/></div>
+            </div>
+            <div class="field">
+              <label>Phone</label>
+              <div class="input-wrap"><i class="ti ti-phone pfx"></i><input type="tel" id="p-phone" readonly/></div>
+              <div style="font-size:11.5px;color:var(--text-3);">Phone cannot be changed</div>
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <div class="input-wrap"><i class="ti ti-mail pfx"></i><input type="email" id="p-email"/></div>
+            </div>
+            <div class="field">
+              <label>National Code</label>
+              <div class="input-wrap"><i class="ti ti-id-badge pfx"></i><input type="text" id="p-national-code" readonly/></div>
+            </div>
+            <div class="field">
+              <label>Date Joined</label>
+              <div class="input-wrap"><i class="ti ti-calendar pfx"></i><input type="text" id="p-date-joined" readonly/></div>
+            </div>
+          </div>
+
+          <button class="save-btn" id="profile-save-btn" onclick="saveProfile()">
+            <div class="spinner" id="profile-spin"></div>
+            <i class="ti ti-device-floppy" id="profile-save-icon"></i>
+            <span id="profile-save-text">Save Changes</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECURITY TAB -->
+    <div class="panel" id="panel-security">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-lock"></i> Change Password</div>
+        </div>
+        <div class="card-body">
+          <div class="msg success" id="pw-success"><i class="ti ti-circle-check"></i> Password changed successfully.</div>
+          <div class="msg error"   id="pw-error"><i class="ti ti-alert-circle"></i><span id="pw-error-text"></span></div>
+
+          <div class="fields-grid">
+            <div class="field full">
+              <label>Current Password</label>
+              <div class="input-wrap">
+                <i class="ti ti-lock pfx"></i>
+                <input type="password" id="pw-current" placeholder="Enter current password"/>
+                <button class="pw-toggle" type="button" onclick="togglePw('pw-current',this)" tabindex="-1"><i class="ti ti-eye"></i></button>
+              </div>
+              <div class="field-error" id="err-pw-current"></div>
+            </div>
+            <div class="field">
+              <label>New Password</label>
+              <div class="input-wrap">
+                <i class="ti ti-lock pfx"></i>
+                <input type="password" id="pw-new" placeholder="New password (min 8 chars)"/>
+                <button class="pw-toggle" type="button" onclick="togglePw('pw-new',this)" tabindex="-1"><i class="ti ti-eye"></i></button>
+              </div>
+              <div class="field-error" id="err-pw-new"></div>
+            </div>
+            <div class="field">
+              <label>Confirm New Password</label>
+              <div class="input-wrap">
+                <i class="ti ti-lock-check pfx"></i>
+                <input type="password" id="pw-confirm" placeholder="Repeat new password"/>
+                <button class="pw-toggle" type="button" onclick="togglePw('pw-confirm',this)" tabindex="-1"><i class="ti ti-eye"></i></button>
+              </div>
+              <div class="field-error" id="err-pw-confirm"></div>
+            </div>
+          </div>
+
+          <button class="save-btn" id="pw-save-btn" onclick="changePassword()">
+            <div class="spinner" id="pw-spin"></div>
+            <i class="ti ti-key" id="pw-save-icon"></i>
+            <span id="pw-save-text">Change Password</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSIONS TAB -->
+    <div class="panel" id="panel-sessions">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-devices"></i> Active Sessions</div>
+          <button class="revoke-all-btn" onclick="revokeOthers()"><i class="ti ti-logout"></i> Sign out other devices</button>
+        </div>
+        <div id="sessions-list"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- DEVICES TAB -->
+    <div class="panel" id="panel-devices">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-device-mobile"></i> Trusted Devices</div>
+        </div>
+        <div id="devices-list"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="toast-container" id="toast-container"></div>
+
+<script src="scripts.js"></script>
+</body>
+</html>

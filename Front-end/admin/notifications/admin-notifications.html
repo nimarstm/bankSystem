@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <aside class="sidebar">
@@ -20,11 +20,14 @@
   <a class="nav-item" href="../../admin/loans/admin-loans.html"><i class="ti ti-coin"></i> Loans</a>
   <a class="nav-item" href="../../admin/transactions/admin-transactions.html"><i class="ti ti-arrows-right-left"></i> Transactions</a>
   <a class="nav-item" href="../../admin/installments/admin-installments.html"><i class="ti ti-receipt"></i> Installments</a>
+  <a class="nav-item" href="../../admin/banks/admin-banks.html"><i class="ti ti-building-bank"></i> Banks</a>
   <div class="sidebar-section">Security</div>
   <a class="nav-item" href="../../admin/fraud/admin-fraud.html"><i class="ti ti-shield-exclamation"></i> Fraud Reports</a>
   <a class="nav-item" href="../../admin/auditlogs/admin-auditlogs.html"><i class="ti ti-file-analytics"></i> Audit Logs</a>
   <div class="sidebar-section">Communication</div>
   <a class="nav-item active" href="../../admin/notifications/admin-notifications.html"><i class="ti ti-bell"></i> Notifications</a>
+  <div class="sidebar-section">AI</div>
+  <a class="nav-item" href="../../admin/ai-agent/admin-ai-agent.html"><i class="ti ti-robot"></i> AI Agent</a>
   <div class="sidebar-footer">
     <div class="sidebar-user">
       <div class="user-avatar-sm" id="sidebar-avatar">AD</div>
@@ -40,18 +43,17 @@
     <a class="back-btn" href="../../admin/dashboard/admin-dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
   </div>
   <div class="content">
-
     <div class="tab-bar">
       <button class="tab-btn active" id="tab-compose" onclick="switchTab('compose')"><i class="ti ti-send"></i> Compose</button>
       <button class="tab-btn" id="tab-history" onclick="switchTab('history')"><i class="ti ti-history"></i> Sent History</button>
     </div>
 
-    <!-- COMPOSE -->
+    <!-- COMPOSE PANEL -->
     <div class="panel active" id="panel-compose">
       <div class="compose-card">
         <div class="compose-header">
           <div class="compose-title">New Notification</div>
-          <div class="compose-sub">Send to a specific user or broadcast to all</div>
+          <div class="compose-sub">Send to a specific user or broadcast to all via your chosen channel</div>
         </div>
 
         <!-- SUCCESS STATE -->
@@ -74,22 +76,33 @@
               </div>
             </div>
 
-            <!-- USER ID FIELD (shown for individual) -->
-            <div class="field" id="user-field">
-              <label for="target-user">User ID</label>
-              <input type="text" id="target-user" placeholder="e.g. 42 or uuid…"/>
-              <div class="field-hint">Enter the user's ID to send a targeted notification</div>
-              <div class="field-error" id="err-user">Please enter a valid user ID.</div>
+            <!-- USER ID (individual only) -->
+            <div class="field" id="user-id-field">
+              <label>User ID</label>
+              <input type="number" id="target-user-id" placeholder="Enter the user's numeric ID…"/>
+              <div class="field-hint">The notification will be sent to this specific user only</div>
+              <div class="field-error" id="err-user-id">Please enter a valid user ID.</div>
+            </div>
+
+            <!-- CHANNEL SELECTOR -->
+            <div class="field">
+              <label>Delivery Channel</label>
+              <div class="channel-row">
+                <button class="channel-btn active" id="ch-inapp"  onclick="setChannel('in-app',this)"><i class="ti ti-bell"></i> In-App</button>
+                <button class="channel-btn"        id="ch-sms"    onclick="setChannel('sms',this)"><i class="ti ti-message"></i> SMS</button>
+                <button class="channel-btn"        id="ch-email"  onclick="setChannel('email',this)"><i class="ti ti-mail"></i> Email</button>
+              </div>
+              <div class="field-hint" id="channel-hint">Delivered inside the EliraPay app</div>
             </div>
 
             <div class="fields-grid">
               <div class="field">
-                <label for="notif-title">Title</label>
+                <label>Title</label>
                 <input type="text" id="notif-title" placeholder="Notification title…" maxlength="100"/>
                 <div class="field-error" id="err-title">Please enter a title.</div>
               </div>
               <div class="field">
-                <label for="notif-type">Type</label>
+                <label>Type</label>
                 <select id="notif-type">
                   <option value="INFO">Info</option>
                   <option value="SUCCESS">Success</option>
@@ -104,14 +117,14 @@
             </div>
 
             <div class="field">
-              <label for="notif-message">Message</label>
+              <label>Message</label>
               <textarea id="notif-message" placeholder="Write your notification message here…" maxlength="500"></textarea>
               <div style="text-align:right;font-size:11.5px;color:var(--text-3);margin-top:3px;"><span id="char-count">0</span>/500</div>
               <div class="field-error" id="err-message">Please enter a message.</div>
             </div>
 
-            <!-- BROADCAST CONFIRM WARNING -->
-            <div id="broadcast-warning" style="display:none;background:var(--warning-bg);border:1.5px solid #fde68a;border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--warning);">
+            <!-- BROADCAST WARNING -->
+            <div class="broadcast-warning" id="broadcast-warning">
               <i class="ti ti-alert-triangle" style="font-size:18px;flex-shrink:0;"></i>
               <span>This will send a notification to <strong>all users</strong> in the system. Please review carefully before sending.</span>
             </div>
@@ -129,19 +142,30 @@
       </div>
     </div>
 
-    <!-- HISTORY -->
+    <!-- HISTORY PANEL -->
     <div class="panel" id="panel-history">
       <div class="table-card">
-        <div class="table-hdr">
-          <span class="table-hdr-title">Sent Notifications</span>
-          <span class="table-count" id="history-count">—</span>
-        </div>
+        <div class="table-hdr"><span class="table-hdr-title">Sent Notifications</span><span class="table-count" id="history-count">—</span></div>
         <div id="history-list"><div class="empty-state"><i class="ti ti-loader-2"></i><p>Loading…</p></div></div>
       </div>
     </div>
-
   </div>
 </div>
+
+<!-- UNAVAILABLE CHANNEL POPUP -->
+<div class="popup-overlay" id="unavail-popup">
+  <div class="popup">
+    <div class="popup-body">
+      <div class="popup-icon"><i class="ti ti-tool"></i></div>
+      <div class="popup-title" id="unavail-title">SMS not available</div>
+      <div class="popup-text">This delivery channel is not available right now. Please use <strong>In-App</strong> notifications instead.</div>
+    </div>
+    <div class="popup-footer">
+      <button class="btn primary" onclick="closeUnavailPopup()"><i class="ti ti-check"></i> Got it</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toast-container"></div>
 
 <script src="scripts.js"></script>
