@@ -3,11 +3,11 @@
   if (!access) window.location.href = '../../auth/auth.html';
 
   const API = {
-    LIST:    '/',
-    CREATE:  '/create/',
-    STATUS:  (id) => `/${id}/status/`,
-    DETAIL:  (id) => `/${id}/`,
-    BRANCHES:(id) => `/${id}/branches/`,
+    LIST:    'banks/',
+    CREATE:  'banks/create/',
+    STATUS:  (id) => `banks/${id}/status/`,
+    DETAIL:  (id) => `banks/${id}/`,
+    BRANCHES:(id) => `banks/${id}/branches/`,
     LOGOUT:  '/api/v1/auth/logout/',
   };
   const H = () => ({'Content-Type':'application/json','Authorization':`Bearer ${access}`});
