@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>EliraPay — Admin · Banks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div><span class="sidebar-logo-text">EliraPay</span></div>
+  <div class="sidebar-role-badge"><i class="ti ti-shield-lock"></i> Admin Panel</div>
+  <div class="sidebar-section">Overview</div>
+  <a class="nav-item" href="../../admin/dashboard/admin-dashboard.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+  <div class="sidebar-section">Management</div>
+  <a class="nav-item" href="../../admin/users/admin-users.html"><i class="ti ti-users"></i> Users</a>
+  <a class="nav-item" href="../../admin/accounts/admin-accounts.html"><i class="ti ti-wallet"></i> Accounts</a>
+  <a class="nav-item" href="../../admin/loans/admin-loans.html"><i class="ti ti-coin"></i> Loans</a>
+  <a class="nav-item" href="../../admin/transactions/admin-transactions.html"><i class="ti ti-arrows-right-left"></i> Transactions</a>
+  <a class="nav-item" href="../../admin/installments/admin-installments.html"><i class="ti ti-receipt"></i> Installments</a>
+  <a class="nav-item active" href="../../admin/banks/admin-banks.html"><i class="ti ti-building-bank"></i> Banks</a>
+  <div class="sidebar-section">Security</div>
+  <a class="nav-item" href="../../admin/fraud/admin-fraud.html"><i class="ti ti-shield-exclamation"></i> Fraud Reports</a>
+  <a class="nav-item" href="../../admin/auditlogs/admin-auditlogs.html"><i class="ti ti-file-analytics"></i> Audit Logs</a>
+  <div class="sidebar-section">Communication</div>
+  <a class="nav-item" href="../../admin/notifications/admin-notifications.html"><i class="ti ti-bell"></i> Notifications</a>
+  <div class="sidebar-section">AI</div>
+  <a class="nav-item" href="../../admin/ai-agent/admin-ai-agent.html"><i class="ti ti-robot"></i> AI Agent</a>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar-sm" id="sidebar-avatar">AD</div>
+      <div class="user-info"><div class="user-name-sm" id="sidebar-name">Admin</div><div class="user-role-sm">Administrator</div></div>
+      <button class="logout-btn" onclick="logout()"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left"><h1>Banks</h1><p>Manage registered banks and their branches</p></div>
+    <div class="topbar-right">
+      <button class="add-btn" onclick="openCreateModal()"><i class="ti ti-plus"></i> Add Bank</button>
+      <a class="back-btn" href="../../admin/dashboard/admin-dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="banks-grid" id="banks-grid">
+      <div class="empty-state"><i class="ti ti-loader-2"></i><p>Loading banks…</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE BANK MODAL -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Bank</span>
+      <button class="modal-close" onclick="closeCreateModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fields-grid">
+        <div class="field">
+          <label>Bank Name</label>
+          <input type="text" id="b-name" placeholder="e.g. Deutsche Bank"/>
+        </div>
+        <div class="field">
+          <label>Bank Code</label>
+          <input type="text" id="b-code" placeholder="e.g. DB" maxlength="10"/>
+        </div>
+        <div class="field">
+          <label>IBAN Prefix</label>
+          <input type="text" id="b-iban-prefix" placeholder="DE" maxlength="5"/>
+        </div>
+        <div class="field">
+          <label>SWIFT Code</label>
+          <input type="text" id="b-swift" placeholder="e.g. DEUTDEDB"/>
+        </div>
+        <div class="field">
+          <label>Transfer Fee (€)</label>
+          <input type="number" id="b-fee" placeholder="0.00" min="0" step="0.01" value="0"/>
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="b-status">
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+            <option value="MAINTENANCE">Maintenance</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <div class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" id="b-instant" checked/><span class="toggle-slider"></span></label>
+          <span style="font-size:13.5px;font-weight:500;color:var(--text);">Supports Instant Transfer</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn ghost" onclick="closeCreateModal()">Cancel</button>
+      <button class="btn primary" id="create-btn" onclick="createBank()">
+        <div class="spinner" id="create-spin"></div>
+        <i class="ti ti-plus" id="create-icon"></i>
+        <span id="create-text">Create Bank</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS MODAL -->
+<div class="modal-overlay" id="status-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Update Bank Status</span>
+      <button class="modal-close" onclick="closeStatusModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>New Status</label>
+        <select id="new-status">
+          <option value="ACTIVE">Active</option>
+          <option value="INACTIVE">Inactive</option>
+          <option value="MAINTENANCE">Maintenance</option>
+          <option value="SUSPENDED">Suspended</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn ghost" onclick="closeStatusModal()">Cancel</button>
+      <button class="btn primary" id="status-btn" onclick="confirmStatusUpdate()">
+        <div class="spinner" id="status-spin"></div>
+        <span id="status-text"><i class="ti ti-check"></i> Update</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="scripts.js"></script>
+</body>
+</html>
