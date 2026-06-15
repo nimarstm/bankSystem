@@ -5,3 +5,4 @@ staticfiles/
 graphify-out/
 .env/
 .idea/
+db.sqlite3
