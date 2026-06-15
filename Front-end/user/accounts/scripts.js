@@ -3,7 +3,7 @@
     DETAIL:      (id) => `/accounts/${id}/`,
     SET_PRIMARY: (id) => `/accounts/${id}/set-primary/`,
     TX_LIMITS:   (id) => `/api/transactions/limits/${id}/usage/`,
-    BANKS:       '/',
+    BANKS:       '/banks/',
     OPEN_ACCOUNT:'/accounts/open/',
     STATEMENT:   (id) => `/api/transactions/statement/${id}/`,
     LOGOUT:      '/api/v1/auth/logout/',
