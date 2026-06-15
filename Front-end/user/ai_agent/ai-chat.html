@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>EliraPay — AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div>
+    <span class="sidebar-logo-text">EliraPay</span>
+  </div>
+
+  <button class="new-chat-btn" onclick="startNewConversation()">
+    <i class="ti ti-plus"></i> New Conversation
+  </button>
+
+  <div class="sidebar-section">Recent Chats</div>
+  <div class="conv-list" id="conv-list">
+    <div style="padding:10px;font-size:12.5px;color:rgba(255,255,255,0.3);text-align:center;">No conversations yet</div>
+  </div>
+
+  <div class="sidebar-section" style="padding-top:0.75rem;">Navigation</div>
+  <a class="nav-item" href="../dashboard/dashboard.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+  <a class="nav-item" href="../transfer/transfer.html"><i class="ti ti-arrows-right-left"></i> Transfer</a>
+  <a class="nav-item" href="../loan/loan.html"><i class="ti ti-coin"></i> Loans</a>
+  <a class="nav-item" href="../installments/installments.html"><i class="ti ti-receipt"></i> Installments</a>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebar-avatar">--</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebar-name">My Account</div>
+        <div class="user-role">Customer</div>
+      </div>
+      <button class="logout-btn" onclick="logout()"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">AI Banking Assistant</span>
+      <div class="ai-badge"><i class="ti ti-robot"></i> Online</div>
+    </div>
+    <a class="back-btn" href="../dashboard/dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
+  </div>
+
+  <!-- CHAT AREA -->
+  <div class="chat-area" id="chat-area">
+    <!-- Welcome state -->
+    <div class="welcome-state" id="welcome-state">
+      <div class="welcome-icon"><i class="ti ti-robot"></i></div>
+      <div class="welcome-title">Hi, I'm your banking assistant</div>
+      <div class="welcome-sub">I can help you check your balance, view transactions, request loans, pay installments, and transfer money — all through conversation.</div>
+      <div class="suggestions">
+        <div class="suggestion" onclick="sendSuggestion('What is my account balance?')"><i class="ti ti-wallet"></i> Check balance</div>
+        <div class="suggestion" onclick="sendSuggestion('Show my recent transactions')"><i class="ti ti-arrows-right-left"></i> Recent transactions</div>
+        <div class="suggestion" onclick="sendSuggestion('Show my active loans')"><i class="ti ti-coin"></i> My loans</div>
+        <div class="suggestion" onclick="sendSuggestion('Show my installments')"><i class="ti ti-receipt"></i> My installments</div>
+        <div class="suggestion" onclick="sendSuggestion('Show my notifications')"><i class="ti ti-bell"></i> Notifications</div>
+        <div class="suggestion" onclick="sendSuggestion('Transfer 100 EUR via IBAN')"><i class="ti ti-building-bank"></i> IBAN transfer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUT BAR -->
+  <div>
+    <div class="input-bar">
+      <div class="input-wrap">
+        <textarea class="chat-input" id="chat-input" placeholder="Ask me anything about your account…" rows="1"
+          onkeydown="handleKeydown(event)" oninput="autoResize(this)"></textarea>
+      </div>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send">
+        <i class="ti ti-send"></i>
+      </button>
+    </div>
+    <div class="input-hint">EliraPay AI · Powered by local LLM · Your data stays private</div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="scripts.js"> </script>
+</body>
+</html>
