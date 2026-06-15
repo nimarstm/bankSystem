@@ -51,8 +51,14 @@ class OpenAccountView(APIView):
         serializer = OpenAccountSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        user = request.user
+
+        if request.user.is_staff or request.user.is_superuser:
+            user_id = serializer.validated_data.get("user_id")
+            if user_id:
+                user = User.objects.get(id=user_id)
         account = AccountService.open_account(
-            user=request.user,
+            user=user,
             bank_id=serializer.validated_data["bank_id"],
             type=serializer.validated_data["type"],
             currency=serializer.validated_data["currency"],

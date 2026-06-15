@@ -99,7 +99,7 @@ class OpenAccountSerializer(serializers.Serializer):
     bank_id = serializers.UUIDField()
     type = serializers.ChoiceField(choices=AccountType.choices)
     currency = serializers.ChoiceField(choices=CurrencyType.choices)
-
+    user_id = serializers.IntegerField(required=False)
 
 # ─────────────────────────────────────────
 #  Write Serializers — Admin / Staff
