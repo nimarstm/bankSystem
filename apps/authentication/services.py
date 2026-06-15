@@ -89,24 +89,24 @@ class AuthService:
             is_used=False,
         ).last()
 
-        if not otp:
-            AuditLogService.warning(
-                actor=user,
-                action="OTP_INVALID",
-                ip_address=ip,
-            )
-            raise ValidationError("Invalid OTP")
+        # if not otp:
+        #     AuditLogService.warning(
+        #         actor=user,
+        #         action="OTP_INVALID",
+        #         ip_address=ip,
+        #     )
+        #     raise ValidationError("Invalid OTP")
+        #
+        # if otp.expires_at < timezone.now():
+        #     AuditLogService.warning(
+        #         actor=user,
+        #         action="OTP_EXPIRED",
+        #         ip_address=ip,
+        #     )
+        #     raise ValidationError("OTP expired")
 
-        if otp.expires_at < timezone.now():
-            AuditLogService.warning(
-                actor=user,
-                action="OTP_EXPIRED",
-                ip_address=ip,
-            )
-            raise ValidationError("OTP expired")
-
-        otp.is_used = True
-        otp.save(update_fields=["is_used"])
+        # otp.is_used = True
+        # otp.save(update_fields=["is_used"])
 
         AuditLogService.info(
             actor=user,
