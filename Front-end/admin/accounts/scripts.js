@@ -18,7 +18,7 @@
     STATEMENT: (id) => `/api/transactions/admin/account/${id}/statement/`,
     LIMITS:    (id) => `/api/transactions/admin/account/${id}/limits/usage/`,
     RESET_LIM: (id) => `/api/transactions/admin/account/${id}/limits/reset/`,
-    BANKS:           `/`,
+    BANKS:           `/banks/`,
     LOGOUT:          `/api/v1/auth/logout/`,
   };
   const H = () => ({'Content-Type':'application/json','Authorization':`Bearer ${access}`});
