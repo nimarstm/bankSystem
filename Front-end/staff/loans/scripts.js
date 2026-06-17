@@ -1,6 +1,6 @@
   const access=localStorage.getItem('access_token');
   const refresh=localStorage.getItem('refresh_token');
-  //if(!access) window.location.href='/auth.html';
+  //if(!access) window.location.href='../../auth/auth.html';
   // Redirect if not manager
   //if(localStorage.getItem('user_role')!=='manager') window.location.href='/staff-dashboard.html';
 
@@ -162,6 +162,6 @@
   document.getElementById('reject-modal').addEventListener('click',function(e){ if(e.target===this) closeRejectModal(); });
   async function logout(){
     try{await fetch(API.LOGOUT,{method:'POST',headers:H(),body:JSON.stringify({refresh_token:refresh})});}catch{}
-    localStorage.clear();window.location.href='/auth.html';
+    localStorage.clear();window.location.href='../../auth/auth.html';
   }
   loadPending();
