@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>EliraPay — Staff Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div><span class="sidebar-logo-text">EliraPay</span></div>
+  <div class="role-badge" id="role-badge"><i class="ti ti-id-badge"></i> <span id="role-label">Staff</span></div>
+  <div class="sidebar-section">Overview</div>
+  <a class="nav-item active" href="../../staff/dashboard/staff-dashboard.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+  <div class="sidebar-section">Operations</div>
+  <a class="nav-item" href="../../staff/accounts/staff-accounts.html"><i class="ti ti-wallet"></i> Accounts</a>
+  <a class="nav-item" href="../../staff/transactions/staff-transactions.html"><i class="ti ti-arrows-right-left"></i> Transactions</a>
+  <a class="nav-item manager-only" id="nav-loans" href="../../staff/loans/staff-loans.html"><i class="ti ti-coin"></i> Loan Requests <span class="nav-badge" id="pending-badge">—</span></a>
+  <div class="sidebar-section">Customer</div>
+  <a class="nav-item" href="../../staff/customers/staff-customers.html"><i class="ti ti-users"></i> Customers</a>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebar-avatar" style="background:linear-gradient(135deg,#10b981,#059669);">--</div>
+      <div class="user-info"><div class="user-name" id="sidebar-name">Staff</div><div class="user-role-txt" id="sidebar-role">Employee</div></div>
+      <button class="logout-btn" onclick="logout()"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="topbar-title">Staff Dashboard</h1>
+      <p id="topbar-date">—</p>
+    </div>
+    <div class="topbar-right">
+      <button class="refresh-btn" id="refresh-btn" onclick="loadAll()"><i class="ti ti-refresh"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card d1">
+        <div class="kpi-icon blue"><i class="ti ti-wallet"></i></div>
+        <div class="kpi-label">Active Accounts</div>
+        <div class="kpi-value" id="kpi-accounts">—</div>
+        <div class="kpi-sub"><i class="ti ti-circle-check"></i> <span id="kpi-accounts-sub">—</span></div>
+      </div>
+      <div class="kpi-card d2">
+        <div class="kpi-icon green"><i class="ti ti-arrows-right-left"></i></div>
+        <div class="kpi-label">Today's Transactions</div>
+        <div class="kpi-value" id="kpi-tx">—</div>
+        <div class="kpi-sub"><i class="ti ti-calendar"></i> Today</div>
+      </div>
+      <div class="kpi-card manager-only d3" id="kpi-loans-card">
+        <div class="kpi-icon amber"><i class="ti ti-coin"></i></div>
+        <div class="kpi-label">Pending Loan Requests</div>
+        <div class="kpi-value" id="kpi-loans">—</div>
+        <div class="kpi-sub"><i class="ti ti-clock"></i> Awaiting review</div>
+      </div>
+      <div class="kpi-card d4">
+        <div class="kpi-icon purple"><i class="ti ti-users"></i></div>
+        <div class="kpi-label">Total Customers</div>
+        <div class="kpi-value" id="kpi-customers">—</div>
+        <div class="kpi-sub"><i class="ti ti-user-check"></i> Registered</div>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div style="font-size:15px;font-weight:600;margin-bottom:1rem;">Quick Actions</div>
+    <div class="quick-grid" id="quick-grid">
+      <a class="quick-card" href="../../staff/accounts/staff-accounts.html">
+        <div class="quick-icon" style="background:#eff6ff;color:var(--accent);"><i class="ti ti-wallet"></i></div>
+        <div><div class="quick-name">Manage Accounts</div><div class="quick-desc">View, deposit, withdraw, freeze accounts</div></div>
+      </a>
+      <a class="quick-card" href="../../staff/transactions/staff-transactions.html">
+        <div class="quick-icon" style="background:var(--success-bg);color:var(--success);"><i class="ti ti-arrows-right-left"></i></div>
+        <div><div class="quick-name">Transactions</div><div class="quick-desc">Browse and search transaction history</div></div>
+      </a>
+      <a class="quick-card" href="../../staff/customers/staff-customers.html">
+        <div class="quick-icon" style="background:var(--purple-bg);color:var(--purple);"><i class="ti ti-users"></i></div>
+        <div><div class="quick-name">Customers</div><div class="quick-desc">View customer accounts and profiles</div></div>
+      </a>
+      <!-- Manager only -->
+      <a class="quick-card manager-only" href="../../staff/loans/staff-loans.html" id="quick-loans">
+        <div class="quick-icon" style="background:var(--warning-bg);color:var(--warning);"><i class="ti ti-coin"></i></div>
+        <div><div class="quick-name">Loan Requests</div><div class="quick-desc">Evaluate, approve or reject loan applications</div></div>
+      </a>
+    </div>
+
+    <!-- RECENT ACCOUNTS + PENDING LOANS (manager) -->
+    <div class="grid-2">
+
+      <!-- Recent Accounts (all staff) -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-wallet"></i> Recent Accounts</div>
+          <a class="card-link" href="../../staff/accounts/staff-accounts.html">View all</a>
+        </div>
+        <div id="recent-accounts"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div>
+      </div>
+
+      <!-- Pending Loans (manager only) / Recent Transactions (employee) -->
+      <div class="card" id="second-card">
+        <div class="card-header">
+          <div class="card-title" id="second-card-title"><i class="ti ti-arrows-right-left"></i> Recent Transactions</div>
+          <a class="card-link" id="second-card-link" href="../../staff/transactions/staff-transactions.html">View all</a>
+        </div>
+        <div id="second-card-body"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="toast-container" id="toast-container"></div>
+
+<script src="scripts.js"> </script>
+</body>
+</html>
