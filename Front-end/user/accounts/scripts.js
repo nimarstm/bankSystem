@@ -1,4 +1,4 @@
-    const API = {
+  const API = {
     MY_ACCOUNTS: '/accounts/my/',
     DETAIL:      (id) => `/accounts/${id}/`,
     SET_PRIMARY: (id) => `/accounts/${id}/set-primary/`,
@@ -92,8 +92,8 @@
         </div>
         <div class="account-footer">
           ${!a.is_primary&&a.status==='ACTIVE'?`<button class="acct-btn success" onclick="setPrimary(${a.id})"><i class="ti ti-star"></i> Set Primary</button>`:''}
-          <a class="acct-btn ghost" href="statement.html" onclick="localStorage.setItem('account_id','${a.id}')"><i class="ti ti-file-description"></i> Statement</a>
-          <a class="acct-btn ghost" href="transfer.html"  onclick="localStorage.setItem('account_id','${a.id}');localStorage.setItem('account_number','${a.account_number||''}')"><i class="ti ti-arrows-right-left"></i> Transfer</a>
+          <a class="acct-btn ghost" href="../../user/statement/statement.html" onclick="localStorage.setItem('account_id','${a.id}')"><i class="ti ti-file-description"></i> Statement</a>
+          <a class="acct-btn ghost" href="../../user/transfer/transfer.html"  onclick="localStorage.setItem('account_id','${a.id}');localStorage.setItem('account_number','${a.account_number||''}')"><i class="ti ti-arrows-right-left"></i> Transfer</a>
         </div>
       </div>`).join('');
 
@@ -179,7 +179,7 @@
     btn.disabled=true; spin.style.display='block'; icon.style.display='none'; txt.textContent='Opening…';
 
     try{
-      const res=await fetch(API.OPEN_ACCOUNT,{method:'POST',headers:H(),body:JSON.stringify({bank:bankId,type,currency})});
+      const res=await fetch(API.OPEN_ACCOUNT,{method:'POST',headers:H(),body:JSON.stringify({bank_id:bankId,type,currency})});
       const data=await res.json();
       if(res.ok){ toast('Account opened successfully!'); closeCreateModal(); loadAccounts(); }
       else { toast(data.detail||data.message||'Failed to open account','error'); }

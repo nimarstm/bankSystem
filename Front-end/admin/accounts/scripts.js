@@ -263,6 +263,10 @@
 
   // ── OPEN ACCOUNT MODAL ────────────────────────────────────────────────────
   async function openOpenAccountModal(){
+    document.getElementById('oa-customer').value='';
+    document.getElementById('oa-type').value='SAVING';
+    document.getElementById('oa-currency').value='EUR';
+    document.getElementById('oa-is-primary').checked=false;
     document.getElementById('open-account-modal').classList.add('show');
     try{
       const res=await fetch(API.BANKS);
@@ -274,16 +278,23 @@
   function closeOpenAccountModal(){ document.getElementById('open-account-modal').classList.remove('show'); }
 
   async function confirmOpenAccount(){
-    const customerId=document.getElementById('oa-customer').value.trim();
-    const bankId    =document.getElementById('oa-bank').value;
-    const type      =document.getElementById('oa-type').value;
-    const currency  =document.getElementById('oa-currency').value;
+    const customerId =document.getElementById('oa-customer').value.trim();
+    const bankId     =document.getElementById('oa-bank').value;
+    const type       =document.getElementById('oa-type').value;
+    const currency   =document.getElementById('oa-currency').value;
+    const isPrimary  =document.getElementById('oa-is-primary').checked;
     if(!customerId){ toast('Enter a customer ID','error'); return; }
     if(!bankId){ toast('Select a bank','error'); return; }
     const btn=document.getElementById('oa-btn'); const spin=document.getElementById('oa-spin'); const txt=document.getElementById('oa-text');
     btn.disabled=true; spin.style.display='block'; txt.textContent='Opening…';
     try{
-      const res=await fetch(API.OPEN,{method:'POST',headers:H(),body:JSON.stringify({customer:customerId,bank:bankId,type,currency})});
+      const res=await fetch(API.OPEN,{method:'POST',headers:H(),body:JSON.stringify({
+        customer_id: Number(customerId),
+        bank_id:     bankId,
+        type,
+        currency,
+        is_primary:  isPrimary,
+      })});
       const data=await res.json();
       if(res.ok){ toast('Account opened successfully'); closeOpenAccountModal(); loadAccounts(1); loadStats(); }
       else { toast(data.detail||data.message||'Failed to open account','error'); }

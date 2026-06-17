@@ -14,7 +14,7 @@ from .serializers import (
 
 
 class BankListView(ListAPIView):
-    queryset = Bank.objects.filter(status="ACTIVE")
+    queryset = Bank.objects.all()
     serializer_class = BankSerializer
 
 

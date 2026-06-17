@@ -41,9 +41,9 @@
 
   // ── RISK SCORE BAR ────────────────────────────────────────────────────────
   function riskBar(score){
-    const pct=Math.min(100,score||0);
+    const pct= score; //Math.min(100,score||0);
     const cls=pct<40?'risk-low':pct<70?'risk-med':'risk-high';
-    return `<div class="risk-bar-wrap"><div class="risk-bar-bg"><div class="risk-bar-fill ${cls}" style="width:${pct}%"></div></div><span style="font-size:12px;font-weight:700;">${score||0}</span></div>`;
+    return `<div class="risk-bar-wrap"><div class="risk-bar-bg"><div class="risk-bar-fill ${cls}" style="width:${pct}%"></div></div><span style="font-size:12px;font-weight:700;">${score}</span></div>`;
   }
 
   // ── REQUEST TABLE ROWS ────────────────────────────────────────────────────
