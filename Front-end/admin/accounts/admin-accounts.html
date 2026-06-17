@@ -134,6 +134,10 @@
       <div class="field"><label>Currency</label>
         <select id="oa-currency"><option value="EUR">EUR</option><option value="USD">USD</option><option value="TRY">TRY</option></select>
       </div>
+      <div class="field" style="flex-direction:row;align-items:center;gap:10px;">
+        <input type="checkbox" id="oa-is-primary" style="width:18px;height:18px;cursor:pointer;accent-color:var(--accent);"/>
+        <label for="oa-is-primary" style="cursor:pointer;margin-bottom:0;">Set as primary account</label>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn ghost" onclick="closeOpenAccountModal()">Cancel</button>
