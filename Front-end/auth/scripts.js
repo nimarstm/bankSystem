@@ -138,8 +138,10 @@
 
           setTimeout(() => {
             const role = me.primary_role || 'customer';
-            if (role === 'admin' || role === 'manager' || role === 'employee') {
+            if (role === 'admin') {
               window.location.href = '../admin/dashboard/admin-dashboard.html';
+            } else if( role === 'manager' || role === 'employee') {
+              window.location.href = '../staff/dashboard/staff-dashboard.html';
             } else {
               window.location.href = '../user/dashboard/dashboard.html';
             }

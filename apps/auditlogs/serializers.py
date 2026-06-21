@@ -12,6 +12,7 @@ class AuditLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuditLog
         fields = [
+            "actor_name",
             "id",
             "actor",
             "action",

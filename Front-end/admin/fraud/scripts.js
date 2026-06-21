@@ -44,16 +44,34 @@
     render();
   }
 
+  // reasons is json with data and not booleans. this is for adding data to the table
+  function renderReasonTags(reason){
+  if(!reason||typeof reason!=='object') return '<span style="color:var(--text-3);font-size:12px;">—</span>';
+  const entries=Object.entries(reason).filter(([k,v])=>v!==null&&v!==undefined&&v!=='');
+  if(!entries.length) return '<span style="color:var(--text-3);font-size:12px;">—</span>';
+  return entries.map(([k,v])=>{
+    const label=k.replace(/_/g,' ');
+    if(v===true) return `<span class="reason-tag">${label}</span>`;
+    if(v===false) return '';
+    const displayVal = (typeof v==='object') ? JSON.stringify(v) : String(v);
+    return `<span class="reason-tag"><strong style="font-weight:700;">${label}:</strong>&nbsp;${displayVal}</span>`;
+  }).join('');
+}
+
+//regex for remove zeros and lines in user id for better view. return zero if null
+function shortUserId(id) {
+  return String(id).replace(/^[0-]+/, '') || '0';
+}
+
   function render(){
     const list=currentFilter==='all'?allReports:allReports.filter(r=>r.decision===currentFilter);
     document.getElementById('table-count').textContent=`${list.length} report${list!==1?'s':''}`;
     if(!list.length){document.getElementById('table-wrap').innerHTML='<div class="empty-state"><i class="ti ti-shield-check"></i><p>No reports match this filter.</p></div>';return;}
     const rows=list.map(r=>{
       const sc=scoreClass(r.score);
-      const reasons=Object.keys(r.reason||{}).filter(k=>r.reason[k]);
       return `<tr>
         <td class="mono">${String(r.transaction_id).slice(0,20)}…</td>
-        <td class="mono">${String(r.user_id).slice(0,12)}…</td>
+        <td class="mono">${shortUserId(r.user_id)}</td>
         <td>
           <div class="score-col">
             <div class="score-bar-bg"><div class="score-bar-fill score-${sc}" style="width:${Math.min(100,r.score)}%"></div></div>
@@ -61,7 +79,7 @@
           </div>
         </td>
         <td><span class="badge ${r.decision}">${r.decision}</span></td>
-        <td>${reasons.length?reasons.map(k=>`<span class="reason-tag">${k.replace(/_/g,' ')}</span>`).join(''):'<span style="color:var(--text-3);font-size:12px;">—</span>'}</td>
+        <td>${renderReasonTags(r.reason)}</td>
         <td style="font-size:12.5px;color:var(--text-3);">${r.created_at?new Date(r.created_at).toLocaleString('en-DE',{dateStyle:'short',timeStyle:'short'}):'—'}</td>
       </tr>`;
     }).join('');

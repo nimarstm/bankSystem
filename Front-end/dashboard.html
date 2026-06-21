@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EliraPay — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0a1628; --navy-2: #112240; --navy-3: #1a3160;
+      --accent: #3b82f6; --accent-2: #60a5fa;
+      --gold: #f59e0b; --gold-light: #fef3c7;
+      --bg: #f0f4f8; --surface: #ffffff;
+      --text: #0f172a; --text-2: #475569; --text-3: #94a3b8;
+      --border: #e2e8f0;
+      --success: #10b981; --success-bg: #ecfdf5;
+      --danger: #ef4444; --danger-bg: #fef2f2;
+      --warning: #f59e0b; --warning-bg: #fffbeb;
+      --radius: 16px; --radius-sm: 10px; --sidebar-w: 240px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.06); --shadow-md: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: var(--sidebar-w); background: var(--navy); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 1.5rem 1.25rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .sidebar-logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+    .sidebar-logo-text { font-family: 'DM Serif Display', serif; font-size: 20px; color: #fff; }
+    .sidebar-section { padding: 1.25rem 1rem 0.5rem; font-size: 10px; font-weight: 600; letter-spacing: 1.2px; color: rgba(255,255,255,0.3); text-transform: uppercase; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 1rem; margin: 2px 0.75rem; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.55); cursor: pointer; text-decoration: none; transition: all 0.18s; position: relative; }
+    .nav-item i { font-size: 18px; }
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+    .nav-item.active { background: rgba(59,130,246,0.2); color: #fff; }
+    .nav-item.active::before { content: ''; position: absolute; left: -0.75rem; top: 50%; transform: translateY(-50%); width: 3px; height: 60%; background: var(--accent); border-radius: 0 3px 3px 0; }
+    .nav-badge { margin-left: auto; background: var(--danger); color: #fff; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 20px; display: none; }
+    .nav-badge.show { display: block; }
+    .sidebar-footer { margin-top: auto; padding: 1rem 0.75rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.07); }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.18s; }
+    .sidebar-user:hover { background: rgba(255,255,255,0.07); }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: #fff; }
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+    .logout-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.35); font-size: 17px; padding: 4px; border-radius: 6px; transition: color 0.18s; }
+    .logout-btn:hover { color: var(--danger); }
+
+    /* MAIN */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+    .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+    .topbar-left h1 { font-size: 17px; font-weight: 600; color: var(--text); }
+    .topbar-left p  { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { width: 38px; height: 38px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 18px; color: var(--text-2); transition: all 0.18s; position: relative; }
+    .icon-btn:hover { background: var(--bg); color: var(--text); }
+    .notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; border: 2px solid var(--surface); display: none; }
+    .notif-dot.show { display: block; }
+    .content { padding: 2rem; flex: 1; }
+
+    /* BALANCE CARD */
+    .balance-card { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-3) 100%); border-radius: var(--radius); padding: 2rem; position: relative; overflow: hidden; margin-bottom: 1.5rem; animation: fadeUp 0.4s ease both; }
+    .balance-card::before { content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(59,130,246,0.12); }
+    .balance-card::after { content: ''; position: absolute; bottom: -80px; right: 80px; width: 180px; height: 180px; border-radius: 50%; background: rgba(59,130,246,0.07); }
+    .balance-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    .balance-label { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.5); letter-spacing: 0.5px; }
+    .balance-amount { font-family: 'DM Serif Display', serif; font-size: 42px; color: #fff; line-height: 1; margin-top: 6px; }
+    .balance-amount .currency { font-size: 22px; margin-right: 4px; opacity: 0.7; }
+    .balance-change { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: #6ee7b7; background: rgba(16,185,129,0.15); padding: 4px 10px; border-radius: 20px; margin-top: 8px; }
+    .card-chip { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,0.6); backdrop-filter: blur(4px); position: relative; z-index: 1; }
+    .balance-stats { display: flex; gap: 2rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.1); position: relative; z-index: 1; }
+    .balance-stat-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 3px; }
+    .balance-stat-val { font-size: 15px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 4px; }
+    .balance-stat-val.inc { color: #6ee7b7; }
+    .balance-stat-val.dec { color: #fca5a5; }
+
+    /* IBAN / Account number row inside balance card */
+    .balance-iban-row { display: flex; flex-wrap: wrap; gap: 1.5rem; padding-top: 1rem; margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); position: relative; z-index: 1; }
+    .balance-iban-item { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: rgba(255,255,255,0.55); }
+    .balance-iban-item i { font-size: 15px; color: rgba(255,255,255,0.35); }
+    .balance-iban-label { color: rgba(255,255,255,0.35); }
+    .balance-iban-val { font-family: monospace; color: #fff; font-weight: 500; letter-spacing: 0.3px; }
+    .iban-copy-btn { background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.35); font-size: 14px; padding: 2px; display: flex; align-items: center; transition: color 0.18s; }
+    .iban-copy-btn:hover { color: #fff; }
+
+    /* My Accounts mini-cards section */
+    .accounts-summary { margin-bottom: 1.5rem; }
+    .accounts-summary-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .accounts-mini-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .mini-account-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 1.1rem 1.25rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block; }
+    .mini-account-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .mini-account-card.is-primary { border-color: var(--accent); background: linear-gradient(135deg, #eff6ff, #fff); }
+    .mac-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .mac-type { font-size: 11px; color: var(--text-3); letter-spacing: 0.4px; text-transform: uppercase; font-weight: 600; }
+    .mac-primary-badge { font-size: 10px; font-weight: 700; background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 20px; }
+    .mac-balance { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--navy); margin-bottom: 6px; }
+    .mac-number { font-family: monospace; font-size: 11.5px; color: var(--text-3); }
+
+    /* GRID */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+
+    /* SERVICE CARDS */
+    .service-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; gap: 1rem; transition: all 0.22s; animation: fadeUp 0.4s ease both; position: relative; overflow: hidden; }
+    .service-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent, rgba(59,130,246,0.03)); opacity: 0; transition: opacity 0.22s; }
+    .service-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent); }
+    .service-card:hover::before { opacity: 1; }
+    .service-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .service-icon.blue  { background: #eff6ff; color: var(--accent); }
+    .service-icon.green { background: #ecfdf5; color: var(--success); }
+    .service-icon.amber { background: var(--gold-light); color: var(--gold); }
+    .service-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .service-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; line-height: 1.5; }
+    .service-arrow { align-self: flex-end; width: 28px; height: 28px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text-3); transition: all 0.22s; }
+    .service-card:hover .service-arrow { background: var(--accent); color: #fff; }
+
+    /* INFO CARDS */
+    .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; animation: fadeUp 0.4s ease both; }
+    .info-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .info-card-title { font-size: 13.5px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    .info-card-title i { font-size: 16px; color: var(--accent); }
+    .section-link { font-size: 12.5px; color: var(--accent); text-decoration: none; font-weight: 500; }
+    .section-link:hover { text-decoration: underline; }
+
+    /* LOAN ITEMS */
+    .loan-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .loan-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .loan-icon { width: 38px; height: 38px; border-radius: var(--radius-sm); background: #eff6ff; color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .loan-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .loan-meta { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+    .loan-amount-val { font-size: 13px; font-weight: 600; color: var(--text); }
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
+    .badge.success { background: var(--success-bg); color: var(--success); }
+    .badge.warning { background: var(--warning-bg); color: var(--warning); }
+    .badge.danger  { background: var(--danger-bg);  color: var(--danger); }
+
+    /* INSTALLMENT PROGRESS */
+    .inst-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .inst-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .inst-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .inst-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .inst-due  { font-size: 11.5px; color: var(--text-3); }
+    .progress-bar { height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), #7c3aed); transition: width 0.6s ease; }
+    .inst-foot { display: flex; justify-content: space-between; margin-top: 5px; }
+    .inst-paid { font-size: 11.5px; color: var(--success); font-weight: 500; }
+    .inst-remaining { font-size: 11.5px; color: var(--text-3); }
+
+    /* NOTIFICATIONS PANEL */
+    .notif-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 360px; background: var(--surface); border-left: 1px solid var(--border); z-index: 200; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s ease; box-shadow: -8px 0 32px rgba(0,0,0,0.08); }
+    .notif-panel.open { transform: translateX(0); }
+    .notif-panel-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .notif-panel-title { font-size: 15px; font-weight: 600; color: var(--text); }
+    .notif-close { background: none; border: none; cursor: pointer; font-size: 20px; color: var(--text-3); padding: 4px; }
+    .notif-close:hover { color: var(--text); }
+    .notif-list { flex: 1; overflow-y: auto; padding: 0.75rem; }
+    .notif-item { display: flex; gap: 12px; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 4px; cursor: pointer; transition: background 0.15s; }
+    .notif-item:hover { background: var(--bg); }
+    .notif-item.unread { background: #eff6ff; }
+    .notif-item.unread:hover { background: #dbeafe; }
+    .notif-dot-indicator { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 5px; }
+    .notif-item:not(.unread) .notif-dot-indicator { background: transparent; }
+    .notif-title-txt { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+    .notif-msg { font-size: 12px; color: var(--text-3); line-height: 1.45; }
+    .notif-time { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+    .notif-mark-all { padding: 0.75rem 1.5rem; border-top: 1px solid var(--border); text-align: center; }
+    .notif-mark-btn { background: none; border: none; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 500; color: var(--accent); cursor: pointer; }
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 150; display: none; backdrop-filter: blur(2px); }
+    .overlay.show { display: block; }
+    .empty { text-align: center; padding: 2rem 1rem; color: var(--text-3); font-size: 13px; }
+    .empty i { font-size: 32px; display: block; margin-bottom: 8px; opacity: 0.4; }
+
+    /* TOAST */
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: var(--navy); color: #fff; font-size: 13px; padding: 12px 16px; border-radius: var(--radius-sm); box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease; max-width: 300px; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .delay-1 { animation-delay: 0.05s; } .delay-2 { animation-delay: 0.1s; } .delay-3 { animation-delay: 0.15s; }
+    .delay-4 { animation-delay: 0.2s; } .delay-5 { animation-delay: 0.25s; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div>
+    <span class="sidebar-logo-text">EliraPay</span>
+  </div>
+  <div class="sidebar-section">Main</div>
+  <a class="nav-item active" href="dashboard.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+  <a class="nav-item" href="#" onclick="openNotifPanel(event)">
+    <i class="ti ti-bell"></i> Notifications
+    <span class="nav-badge" id="notif-nav-badge">0</span>
+  </a>
+  <div class="sidebar-section">Services</div>
+  <a class="nav-item" href="transfer.html"><i class="ti ti-arrows-right-left"></i> Transfer Money</a>
+  <a class="nav-item" href="loan.html"><i class="ti ti-coin"></i> Loans</a>
+  <a class="nav-item" href="installments.html"><i class="ti ti-receipt"></i> Installments</a>
+  <a class="nav-item" href="statement.html"><i class="ti ti-file-description"></i> Statement</a>
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sidebar-avatar">--</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebar-name">Loading…</div>
+        <div class="user-role">Customer</div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Logout"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 id="topbar-greeting">Good morning 👋</h1>
+      <p id="topbar-date">—</p>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn" onclick="openNotifPanel(event)" title="Notifications">
+        <i class="ti ti-bell"></i>
+        <span class="notif-dot" id="notif-dot"></span>
+      </div>
+      <div class="icon-btn" onclick="logout()" title="Logout"><i class="ti ti-logout"></i></div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Balance Card -->
+    <div class="balance-card">
+      <div class="balance-top">
+        <div>
+          <div class="balance-label">TOTAL BALANCE</div>
+          <div class="balance-amount"><span class="currency">€</span><span id="balance-amount">—</span></div>
+          <div class="balance-change"><i class="ti ti-trending-up"></i> Across all accounts</div>
+        </div>
+        <div class="card-chip">
+          <i class="ti ti-credit-card"></i>
+          <span id="account-number">•••• ••••</span>
+        </div>
+      </div>
+      <div class="balance-stats">
+        <div>
+          <div class="balance-stat-label">Available</div>
+          <div class="balance-stat-val inc" id="available-balance">—</div>
+        </div>
+        <div>
+          <div class="balance-stat-label">Blocked</div>
+          <div class="balance-stat-val dec" id="blocked-balance">—</div>
+        </div>
+        <div>
+          <div class="balance-stat-label">Account Type</div>
+          <div class="balance-stat-val" id="account-type" style="font-size:13px;">—</div>
+        </div>
+      </div>
+      <div class="balance-iban-row">
+        <div class="balance-iban-item">
+          <i class="ti ti-hash"></i>
+          <span class="balance-iban-label">Account No.</span>
+          <span class="balance-iban-val" id="full-account-number">—</span>
+          <button class="iban-copy-btn" onclick="copyToClipboard('full-account-number')" title="Copy"><i class="ti ti-copy"></i></button>
+        </div>
+        <div class="balance-iban-item">
+          <i class="ti ti-building-bank"></i>
+          <span class="balance-iban-label">IBAN</span>
+          <span class="balance-iban-val" id="full-iban">—</span>
+          <button class="iban-copy-btn" onclick="copyToClipboard('full-iban')" title="Copy"><i class="ti ti-copy"></i></button>
+        </div>
+        <div class="balance-iban-item">
+          <i class="ti ti-building"></i>
+          <span class="balance-iban-label">Bank</span>
+          <span class="balance-iban-val" id="bank-name">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Accounts Summary -->
+    <div class="accounts-summary" id="accounts-summary-section" style="display:none;">
+      <div class="accounts-summary-header">
+        <div style="font-size:15px;font-weight:600;color:var(--text);">My Accounts</div>
+        <a class="section-link" href="my-accounts.html">View all</a>
+      </div>
+      <div class="accounts-mini-grid" id="accounts-mini-grid">
+        <div class="empty"><i class="ti ti-loader-2"></i>Loading…</div>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:1rem;">Services</div>
+    <div class="grid-3" style="margin-bottom:1.5rem;">
+      <a class="service-card delay-1" href="transfer.html">
+        <div class="service-icon blue"><i class="ti ti-arrows-right-left"></i></div>
+        <div><div class="service-name">Transfer Money</div><div class="service-desc">Send via card number or IBAN instantly</div></div>
+        <div class="service-arrow"><i class="ti ti-arrow-right"></i></div>
+      </a>
+      <a class="service-card delay-2" href="loan.html">
+        <div class="service-icon green"><i class="ti ti-coin"></i></div>
+        <div><div class="service-name">Loans</div><div class="service-desc">Request a new loan or track active requests</div></div>
+        <div class="service-arrow"><i class="ti ti-arrow-right"></i></div>
+      </a>
+      <a class="service-card delay-3" href="installments.html">
+        <div class="service-icon amber"><i class="ti ti-receipt"></i></div>
+        <div><div class="service-name">Installments</div><div class="service-desc">View and pay your active installment plans</div></div>
+        <div class="service-arrow"><i class="ti ti-arrow-right"></i></div>
+      </a>
+    </div>
+
+    <!-- Loan Summary + Installments -->
+    <div class="grid-2">
+      <div class="info-card delay-4">
+        <div class="info-card-header">
+          <div class="info-card-title"><i class="ti ti-coin"></i> Active Loans</div>
+          <a class="section-link" href="loan.html">View all</a>
+        </div>
+        <div id="loan-list"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div>
+      </div>
+      <div class="info-card delay-5">
+        <div class="info-card-header">
+          <div class="info-card-title"><i class="ti ti-receipt"></i> Installments</div>
+          <a class="section-link" href="installments.html">View all</a>
+        </div>
+        <div id="installment-list"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications Panel -->
+<div class="overlay" id="overlay" onclick="closeNotifPanel()"></div>
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-panel-header">
+    <span class="notif-panel-title">Notifications</span>
+    <button class="notif-close" onclick="closeNotifPanel()"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="notif-list" id="notif-list"><div class="empty"><i class="ti ti-loader-2"></i>Loading…</div></div>
+  <div class="notif-mark-all"><button class="notif-mark-btn" onclick="markAllRead()">Mark all as read</button></div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+  // ── ENDPOINTS ─────────────────────────────────────────────────────────────
+  const API = {
+    ME:           '/api/v1/users/me/',
+    ACCOUNTS:     '/accounts/my/',
+    LOANS:        '/loans/my-loans/',
+    INSTALLMENTS: '/installments/my/',
+    NOTIFS:       '/notifications/my/',
+    NOTIF_COUNT:  '/notifications/unread-count/',
+    NOTIF_READ:   (id) => `/notifications/${id}/read/`,
+    NOTIF_ALL:    '/notifications/mark-all-read/',
+    LOGOUT:       '/api/v1/auth/logout/',
+  };
+
+  const access  = localStorage.getItem('access_token');
+  const refresh = localStorage.getItem('refresh_token');
+  if (!access) window.location.href = '/auth.html';
+
+  const H = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${access}` });
+
+  function toast(msg, type='success') {
+    const el = document.createElement('div'); el.className = `toast`;
+    el.innerHTML = `<i class="ti ti-${type==='success'?'circle-check':'alert-circle'}"></i> ${msg}`;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
+
+  function fmt(n) {
+    return '€' + Number(n||0).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  // ── GREETING ──────────────────────────────────────────────────────────────
+  function initGreeting() {
+    const now  = new Date();
+    const hour = now.getHours();
+    const greet = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    const name  = localStorage.getItem('user_name') || '';
+    document.getElementById('topbar-greeting').textContent = `${greet}${name ? ', ' + name.split(' ')[0] : ''} 👋`;
+    document.getElementById('topbar-date').textContent = now.toLocaleDateString('en-DE', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    const initials = name ? name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : 'U';
+    document.getElementById('sidebar-avatar').textContent = initials;
+    document.getElementById('sidebar-name').textContent = name || 'My Account';
+  }
+
+  // ── LOAD ACCOUNTS ─────────────────────────────────────────────────────────
+  async function loadAccounts() {
+    try {
+      const res  = await fetch(API.ACCOUNTS, { headers: H() });
+      const data = await res.json();
+      const accounts = Array.isArray(data) ? data : (data.results || []);
+      // find primary or first
+      const primary = accounts.find(a => a.is_primary) || accounts[0];
+      if (primary) {
+        document.getElementById('balance-amount').textContent  = Number(primary.balance||0).toLocaleString(undefined,{minimumFractionDigits:2});
+        document.getElementById('account-number').textContent  = primary.account_number ? primary.account_number.slice(-8) : '—';
+        document.getElementById('available-balance').textContent = fmt(Number(primary.balance||0) - Number(primary.blocked_balance||0));
+        document.getElementById('blocked-balance').textContent   = fmt(primary.blocked_balance);
+        document.getElementById('account-type').textContent      = primary.type || '—';
+        document.getElementById('full-account-number').textContent = primary.account_number || '—';
+        document.getElementById('full-iban').textContent           = primary.iban || '—';
+        document.getElementById('bank-name').textContent           = primary.bank?.name || '—';
+        localStorage.setItem('account_id', primary.id);
+        localStorage.setItem('account_number', primary.account_number || '');
+      }
+
+      // Render "My Accounts" mini-cards (all accounts, not just primary)
+      const grid = document.getElementById('accounts-mini-grid');
+      const section = document.getElementById('accounts-summary-section');
+      if (accounts.length) {
+        section.style.display = 'block';
+        grid.innerHTML = accounts.map(a => `
+          <a class="mini-account-card ${a.is_primary?'is-primary':''}" href="my-accounts.html">
+            <div class="mac-top">
+              <span class="mac-type">${a.type||'—'} · ${a.currency||''}</span>
+              ${a.is_primary?'<span class="mac-primary-badge">PRIMARY</span>':''}
+            </div>
+            <div class="mac-balance">€${Number(a.balance||0).toLocaleString(undefined,{minimumFractionDigits:2})}</div>
+            <div class="mac-number">${a.account_number||'—'}</div>
+          </a>`).join('');
+      } else {
+        section.style.display = 'none';
+      }
+    } catch {
+      document.getElementById('balance-amount').textContent = '—';
+    }
+  }
+
+  function copyToClipboard(elId) {
+    const text = document.getElementById(elId).textContent;
+    if (!text || text === '—') return;
+    navigator.clipboard.writeText(text.replace(/\s/g,'')).then(() => {
+      const el = document.getElementById(elId);
+      const orig = el.textContent;
+      el.textContent = 'Copied!';
+      setTimeout(() => { el.textContent = orig; }, 1200);
+    }).catch(() => toast('Copy failed', 'error'));
+  }
+
+  // ── LOAD LOANS ────────────────────────────────────────────────────────────
+  async function loadLoans() {
+    const el = document.getElementById('loan-list');
+    try {
+      const res  = await fetch(API.LOANS, { headers: H() });
+      const data = await res.json();
+      const loans = Array.isArray(data) ? data : (data.results || []);
+      if (!loans.length) { el.innerHTML = '<div class="empty"><i class="ti ti-coin-off"></i>No active loans</div>'; return; }
+      el.innerHTML = loans.slice(0,3).map(l => `
+        <div class="loan-item">
+          <div class="loan-icon"><i class="ti ti-coin"></i></div>
+          <div style="flex:1;">
+            <div class="loan-name">${(l.loan_type||'Loan').replace(/_/g,' ')}</div>
+            <div class="loan-meta">${l.started_at?new Date(l.started_at).toLocaleDateString('en-DE'):''} ${l.duration_months?'· '+l.duration_months+' months':''}</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="loan-amount-val">${fmt(l.principal_amount)}</div>
+            <span class="badge ${l.status==='ACTIVE'?'success':l.status==='COMPLETED'?'success':'warning'}">${l.status||'active'}</span>
+          </div>
+        </div>`).join('');
+    } catch {
+      el.innerHTML = '<div class="empty"><i class="ti ti-coin-off"></i>No active loans</div>';
+    }
+  }
+
+  // ── LOAD INSTALLMENTS ─────────────────────────────────────────────────────
+  async function loadInstallments() {
+    const el = document.getElementById('installment-list');
+    try {
+      const res  = await fetch(API.INSTALLMENTS, { headers: H() });
+      const data = await res.json();
+      const insts = Array.isArray(data) ? data : (data.results || []);
+      const pending = insts.filter(i => i.status !== 'PAID').slice(0,3);
+      if (!pending.length) { el.innerHTML = '<div class="empty"><i class="ti ti-receipt-off"></i>No pending installments</div>'; return; }
+      el.innerHTML = pending.map(i => {
+        const paid  = i.paid_amount||0;
+        const total = i.amount||1;
+        const pct   = Math.min(100, Math.round((paid/total)*100));
+        return `
+          <div class="inst-item">
+            <div class="inst-top">
+              <span class="inst-name">Installment #${i.number}</span>
+              <span class="inst-due">Due: ${i.due_date||'—'}</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+            <div class="inst-foot">
+              <span class="inst-paid">${fmt(paid)} paid</span>
+              <span class="inst-remaining">${fmt(total)} total</span>
+            </div>
+          </div>`;
+      }).join('');
+    } catch {
+      el.innerHTML = '<div class="empty"><i class="ti ti-receipt-off"></i>No installments</div>';
+    }
+  }
+
+  // ── NOTIFICATIONS ─────────────────────────────────────────────────────────
+  async function loadUnreadCount() {
+    try {
+      const res  = await fetch(API.NOTIF_COUNT, { headers: H() });
+      const data = await res.json();
+      const count = data.count || data.unread_count || 0;
+      if (count > 0) {
+        const badge = document.getElementById('notif-nav-badge');
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.classList.add('show');
+        document.getElementById('notif-dot').classList.add('show');
+      }
+    } catch { /* silent */ }
+  }
+
+  async function loadNotifications() {
+    const el = document.getElementById('notif-list');
+    try {
+      const res  = await fetch(API.NOTIFS, { headers: H() });
+      const data = await res.json();
+      const notifs = Array.isArray(data) ? data : (data.results || []);
+      if (!notifs.length) { el.innerHTML = '<div class="empty"><i class="ti ti-bell-off"></i>No notifications</div>'; return; }
+      el.innerHTML = notifs.map(n => `
+        <div class="notif-item ${!n.is_read?'unread':''}" onclick="markRead('${n.id}',this)">
+          <div class="notif-dot-indicator"></div>
+          <div>
+            <div class="notif-title-txt">${n.title||'Notification'}</div>
+            <div class="notif-msg">${n.message||n.body||''}</div>
+            <div class="notif-time">${n.created_at?new Date(n.created_at).toLocaleString('en-DE',{dateStyle:'short',timeStyle:'short'}):''}</div>
+          </div>
+        </div>`).join('');
+    } catch {
+      el.innerHTML = '<div class="empty"><i class="ti ti-bell-off"></i>No notifications</div>';
+    }
+  }
+
+  async function markRead(id, el) {
+    el.classList.remove('unread');
+    try { await fetch(API.NOTIF_READ(id), { method: 'POST', headers: H() }); } catch { /* silent */ }
+  }
+
+  async function markAllRead() {
+    document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+    document.getElementById('notif-nav-badge').classList.remove('show');
+    document.getElementById('notif-dot').classList.remove('show');
+    try { await fetch(API.NOTIF_ALL, { method: 'POST', headers: H() }); } catch { /* silent */ }
+    toast('All notifications marked as read');
+  }
+
+  function openNotifPanel(e) {
+    if (e) e.preventDefault();
+    document.getElementById('notif-panel').classList.add('open');
+    document.getElementById('overlay').classList.add('show');
+    loadNotifications();
+  }
+  function closeNotifPanel() {
+    document.getElementById('notif-panel').classList.remove('open');
+    document.getElementById('overlay').classList.remove('show');
+  }
+
+  // ── LOGOUT ────────────────────────────────────────────────────────────────
+  async function logout() {
+    try {
+      await fetch(API.LOGOUT, {
+        method: 'POST', headers: H(),
+        body: JSON.stringify({ refresh_token: refresh }),
+      });
+    } catch { /* best-effort */ }
+    localStorage.clear();
+    window.location.href = '/auth.html';
+  }
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  initGreeting();
+  loadAccounts();
+  loadLoans();
+  loadInstallments();
+  loadUnreadCount();
+</script>
+</body>
+</html>

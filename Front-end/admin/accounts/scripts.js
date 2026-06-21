@@ -73,8 +73,8 @@
       const rows=list.map(a=>`
         <tr onclick="openDrawer(${a.id})">
           <td><span class="mono">${a.account_number}</span>${a.is_primary?'<span class="badge primary-tag" style="margin-left:6px;font-size:10px;">Primary</span>':''}</td>
-          <td><span class="mono" style="font-size:11px;">${(a.iban||'—').slice(0,22)}…</span></td>
-          <td>${a.customer?.fullname||'—'}</td>
+          <td><span class="mono" style="font-size:11px;">${(a.iban).slice(0,22)}…</span></td>
+          <td>${a.customer_name}</td>
           <td>${a.type} · ${a.currency}</td>
           <td style="font-weight:600;">${fmt(a.balance)}</td>
           <td><span class="badge ${a.status}">${a.status}</span></td>
@@ -131,8 +131,8 @@
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);">
         <div style="width:50px;height:50px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent);"><i class="ti ti-wallet"></i></div>
         <div>
-          <div style="font-size:16px;font-weight:700;font-family:monospace;">${a.account_number||'—'}</div>
-          <div style="font-size:12.5px;color:var(--text-3);margin-top:2px;">${a.customer?.fullname||'—'} · ${a.type} · ${a.currency}</div>
+          <div style="font-size:16px;font-weight:700;font-family:monospace;">${a.account_number}</div>
+          <div style="font-size:12.5px;color:var(--text-3);margin-top:2px;"> ${a.type} · ${a.currency}</div>
           <div style="margin-top:5px;display:flex;gap:6px;">
             <span class="badge ${a.status}">${a.status}</span>
             ${a.is_primary?'<span class="badge primary-tag">Primary</span>':''}
@@ -146,10 +146,10 @@
       </div>
       <div class="detail-grid">
         <div class="detail-cell"><div class="detail-label">IBAN</div><div class="detail-val" style="font-size:11.5px;font-family:monospace;">${a.iban||'—'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Bank</div><div class="detail-val">${a.bank?.name||'—'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Customer Email</div><div class="detail-val">${a.customer?.email||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Bank</div><div class="detail-val">${a.bank_name}</div></div>
+        <div class="detail-cell"><div class="detail-label">Customer Email</div><div class="detail-val">${a.email}</div></div>
         <div class="detail-cell"><div class="detail-label">Created</div><div class="detail-val">${a.created_at?new Date(a.created_at).toLocaleDateString('en-DE'):'—'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Customer ID</div><div class="detail-val">${a.customer?.id||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Customer Name</div><div class="detail-val">${a.customer_name}</div></div>
         <div class="detail-cell"><div class="detail-label">Loan Blocked</div><div class="detail-val">${fmt(a.loan_blocked_balance)}</div></div>
       </div>`;
     buildFooter(a);

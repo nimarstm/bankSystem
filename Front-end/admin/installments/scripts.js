@@ -35,7 +35,7 @@
       <tbody>${list.map(i=>`
         <tr onclick="openDrawer('${i.id}')">
           <td style="font-weight:700;">${i.number}</td>
-          <td>${i.loan?.customer?.fullname||'—'}</td>
+          <td>${i.customer_name}</td>
           <td style="font-weight:500;">${i.due_date||'—'}${new Date(i.due_date)<new Date()&&i.status!=='PAID'?'<br><span style="font-size:11px;color:var(--danger);font-weight:600;">OVERDUE</span>':''}</td>
           <td style="font-weight:600;">€${Number(i.amount||0).toFixed(2)}</td>
           <td>${Number(i.penalty_amount||0)>0?`<span style="color:var(--danger);font-weight:600;">€${Number(i.penalty_amount).toFixed(2)}</span>`:'—'}</td>
@@ -100,13 +100,13 @@
         <div style="margin-top:8px;"><span class="badge ${i.status}">${i.status}</span></div>
       </div>
       <div class="detail-grid">
-        <div class="detail-cell"><div class="detail-label">Customer</div><div class="detail-val">${i.loan?.customer?.fullname||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Customer</div><div class="detail-val">${i.customer_name}</div></div>
         <div class="detail-cell"><div class="detail-label">Due Date</div><div class="detail-val">${i.due_date||'—'}</div></div>
         <div class="detail-cell"><div class="detail-label">Base Amount</div><div class="detail-val">€${Number(i.amount||0).toFixed(2)}</div></div>
         <div class="detail-cell"><div class="detail-label">Penalty</div><div class="detail-val" style="color:var(--danger);">€${Number(i.penalty_amount||0).toFixed(2)}</div></div>
         <div class="detail-cell"><div class="detail-label">Paid Amount</div><div class="detail-val" style="color:var(--success);">€${Number(i.paid_amount||0).toFixed(2)}</div></div>
         <div class="detail-cell"><div class="detail-label">Paid At</div><div class="detail-val">${i.paid_at?new Date(i.paid_at).toLocaleString('en-DE'):'Not paid'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Loan ID</div><div class="detail-val" style="font-size:11px;font-family:monospace;">${i.loan?.id||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Loan ID</div><div class="detail-val" style="font-size:11px;font-family:monospace;">${i.id||'—'}</div></div>
         <div class="detail-cell"><div class="detail-label">Created</div><div class="detail-val">${i.created_at?new Date(i.created_at).toLocaleDateString('en-DE'):'—'}</div></div>
       </div>`;
     if(i.status!=='PAID'){

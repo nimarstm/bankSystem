@@ -19,8 +19,8 @@ class KPIService:
     @staticmethod
     def users():
         return {
-            "total_users": User.objects.count(),
-            "active_users": User.objects.filter(is_active=True).count(),
+            "total_users": User.objects.all().count(),
+            "active_users": User.objects.filter(status="active").count(),
         }
 
     @staticmethod

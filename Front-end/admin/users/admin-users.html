@@ -40,7 +40,10 @@
 <div class="main">
   <div class="topbar">
     <div class="topbar-left"><h1>User Management</h1><p>View, filter and manage all system users</p></div>
-    <a class="back-btn" href="../../admin/dashboard/admin-dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="add-user-btn" onclick="openAddUserModal()"><i class="ti ti-user-plus"></i> Add User</button>
+      <a class="back-btn" href="../../admin/dashboard/admin-dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
+    </div>
   </div>
   <div class="content">
     <div class="filters-card">
@@ -61,7 +64,6 @@
           <option value="admin">Admin</option>
         </select>
         <select class="filter-select" id="filter-verified">
-          <option value="">Verified?</option>
           <option value="true">Verified</option>
           <option value="false">Unverified</option>
         </select>
@@ -163,6 +165,66 @@
     </div>
   </div>
 </div>
+<!-- ADD USER MODAL -->
+<div class="modal-overlay" id="add-user-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header" style="background:linear-gradient(135deg,var(--navy),var(--navy-3));padding:1.5rem;border-bottom:none;border-radius:var(--radius) var(--radius) 0 0;">
+      <div style="font-family:'DM Serif Display',serif;font-size:20px;color:#fff;">Add New User</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px;">Uses POST /api/v1/users/register/</div>
+    </div>
+    <div class="modal-body" style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem;">
+      <div class="msg error" id="add-user-error" style="display:none;font-size:13px;padding:10px 12px;border-radius:var(--radius-sm);align-items:center;gap:8px;background:var(--danger-bg);color:var(--danger);">
+        <i class="ti ti-alert-circle"></i><span id="add-user-error-text"></span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">
+        <div class="field" style="grid-column:1/-1;">
+          <label>Full Name</label>
+          <input type="text" id="au-fullname" placeholder="John Doe"/>
+          <div class="field-error" id="err-au-fullname"></div>
+        </div>
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="tel" id="au-phone" placeholder="+49 000 000 0000"/>
+          <div class="field-error" id="err-au-phone"></div>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="au-email" placeholder="john@example.com"/>
+          <div class="field-error" id="err-au-email"></div>
+        </div>
+        <div class="field">
+          <label>National Code</label>
+          <input type="text" id="au-national-code" placeholder="1234567890" maxlength="10"/>
+          <div class="field-error" id="err-au-national-code"></div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="au-password" placeholder="Min. 8 characters"/>
+          <div class="field-error" id="err-au-password"></div>
+        </div>
+        <div class="field">
+          <label>Role (after creation)</label>
+          <select id="au-role">
+            <option value="customer">Customer</option>
+            <option value="employee">Employee</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+          <div style="font-size:11.5px;color:var(--text-3);margin-top:4px;">Role is set after registration via change-role endpoint</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn ghost" onclick="closeAddUserModal()">Cancel</button>
+      <button class="btn primary" id="add-user-btn" onclick="confirmAddUser()">
+        <div class="spinner" id="add-user-spin"></div>
+        <i class="ti ti-user-plus" id="add-user-icon"></i>
+        <span id="add-user-text">Create User</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toast-container"></div>
 
 <script src="scripts.js"></script>

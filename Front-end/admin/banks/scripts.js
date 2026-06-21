@@ -61,35 +61,12 @@
           <div class="bank-detail-row"><span class="bank-detail-label">Registered</span><span class="bank-detail-val">${b.created_at?new Date(b.created_at).toLocaleDateString('en-DE'):'—'}</span></div>
         </div>
         <div class="bank-footer">
-          <button class="btn ghost" onclick="loadBranches('${b.id}','${b.name}',this)"><i class="ti ti-map-pin"></i> Branches</button>
           <button class="btn warning" onclick="openStatusModal('${b.id}','${b.status}')"><i class="ti ti-pencil"></i> Status</button>
         </div>
-        <div class="branches-section" id="branches-${b.id}" style="display:none;padding:0 1.5rem 1rem;"></div>
       </div>`).join('');
   }
 
-  // ── BRANCHES ──────────────────────────────────────────────────────────────
-  async function loadBranches(bankId, bankName, btn){
-    const section=document.getElementById(`branches-${bankId}`);
-    if(section.style.display!=='none'){ section.style.display='none'; btn.innerHTML='<i class="ti ti-map-pin"></i> Branches'; return; }
-    section.style.display='block';
-    section.innerHTML='<div style="font-size:13px;color:var(--text-3);padding:8px 0;">Loading branches…</div>';
-    btn.innerHTML='<i class="ti ti-x"></i> Hide';
-    try{
-      const res=await fetch(API.BRANCHES(bankId),{headers:H()});
-      const data=await res.json();
-      const list=Array.isArray(data)?data:(data.results||[]);
-      if(!list.length){ section.innerHTML='<div style="font-size:13px;color:var(--text-3);padding:8px 0;">No branches found.</div>'; return; }
-      section.innerHTML=`
-        <div style="font-size:12px;font-weight:700;color:var(--text-3);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;padding-top:4px;">Branches (${list.length})</div>
-        ${list.map(br=>`
-          <div class="branch-item">
-            <div class="branch-city">${br.city}</div>
-            <div class="branch-name">${br.name}</div>
-            ${br.phone?`<div class="branch-phone">${br.phone}</div>`:''}
-          </div>`).join('')}`;
-    } catch { section.innerHTML='<div style="font-size:13px;color:var(--danger);padding:8px 0;">Failed to load branches.</div>'; }
-  }
+
 
   // ── CREATE BANK ───────────────────────────────────────────────────────────
   function openCreateModal(){ document.getElementById('create-modal').classList.add('show'); }

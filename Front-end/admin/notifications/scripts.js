@@ -22,7 +22,10 @@
     document.getElementById('toast-container').appendChild(el);setTimeout(()=>el.remove(),4000);
   }
 
-  // ── TABS ──────────────────────────────────────────────────────────────────
+  // ── CHAR COUNT ────────────────────────────────────────────────────────────
+  document.getElementById('notif-message').addEventListener('input',function(){
+    document.getElementById('char-count').textContent=this.value.length;
+  });
   function switchTab(tab){
     ['compose','history'].forEach(t=>{
       document.getElementById('tab-'+t).classList.toggle('active',t===tab);
@@ -66,6 +69,122 @@
   function closeUnavailPopup(){ document.getElementById('unavail-popup').classList.remove('show'); }
   document.getElementById('unavail-popup').addEventListener('click',function(e){ if(e.target===this) closeUnavailPopup(); });
 
+  // ── USER SEARCH DROPDOWN ──────────────────────────────────────────────────
+  let userSearchTimer=null;
+  let selectedUserId=null;
+
+  async function searchUsers(query){
+    const dropdown=document.getElementById('user-dropdown');
+    const list=document.getElementById('user-dropdown-list');
+
+    // If a user is already selected and they clear/change input, deselect
+    if(selectedUserId){
+      clearUserSelection();
+    }
+
+    if(!query||query.trim().length<1){
+      // Show recent/all users on focus with empty query
+      query='';
+    }
+
+    dropdown.style.display='block';
+    list.innerHTML='<div style="padding:10px 14px;font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:8px;"><i class="ti ti-loader-2"></i> Searching…</div>';
+
+    clearTimeout(userSearchTimer);
+    userSearchTimer=setTimeout(async()=>{
+      try{
+        const p=new URLSearchParams();
+        if(query.trim()) p.set('search',query.trim());
+        const res=await fetch(`/api/v1/users/admin/?${p}`,{headers:H()});
+
+        if(!res.ok){
+          let detail='';
+          try{ const errBody=await res.json(); detail=errBody.detail||errBody.message||JSON.stringify(errBody); }
+          catch{ detail=await res.text().catch(()=>''); }
+          console.error('User search failed:',res.status,detail);
+          list.innerHTML=`<div style="padding:12px 14px;font-size:12.5px;color:var(--danger);line-height:1.5;">
+            <i class="ti ti-alert-circle"></i> Request failed (${res.status} ${res.statusText})<br>
+            <span style="color:var(--text-3);">${detail||'No error details returned. Check that /api/v1/users/admin/ exists and your token is valid.'}</span>
+          </div>`;
+          return;
+        }
+
+        const data=await res.json();
+        const users=Array.isArray(data)?data:(data.results||[]);
+
+        if(!users.length){
+          list.innerHTML='<div style="padding:12px 14px;font-size:13px;color:var(--text-3);">No users found.</div>';
+          return;
+        }
+
+        const avatarColors=['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4'];
+        const col=(name)=>avatarColors[(name||'').charCodeAt(0)%avatarColors.length];
+        const ini=(name)=>(name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+
+        list.innerHTML=users.slice(0,8).map(u=>`
+          <div onclick="selectUser(${u.id},'${(u.fullname||'').replace(/'/g,"\\'")}','${u.phone||''}','${u.email||''}')"
+            style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid var(--border);"
+            onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+            <div style="width:32px;height:32px;border-radius:50%;background:${col(u.fullname)};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">${ini(u.fullname)}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${u.fullname||'—'}</div>
+              <div style="font-size:12px;color:var(--text-3);">${u.phone||''} ${u.email?'· '+u.email:''}</div>
+            </div>
+            <span style="font-size:11px;color:var(--text-3);font-weight:500;flex-shrink:0;">#${u.id}</span>
+          </div>`).join('');
+      } catch (err) {
+        console.error('User search network error:', err);
+        list.innerHTML=`<div style="padding:12px 14px;font-size:12.5px;color:var(--danger);line-height:1.5;">
+          <i class="ti ti-alert-circle"></i> Network error<br>
+          <span style="color:var(--text-3);">${err?.message||'Could not reach the server.'}</span>
+        </div>`;
+      }
+    }, 280);
+  }
+
+  function selectUser(id, name, phone, email){
+    selectedUserId=id;
+    document.getElementById('target-user-id').value=id;
+
+    // Update search input to show selected name
+    document.getElementById('user-search-input').value=name;
+    document.getElementById('user-search-input').style.borderColor='var(--accent)';
+    document.getElementById('user-clear-btn').style.display='block';
+
+    // Show selected badge
+    const badge=document.getElementById('selected-user-badge');
+    badge.style.display='flex';
+    const avatarColors=['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4'];
+    const ini=(n)=>(n||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('selected-user-avatar').textContent=ini(name);
+    document.getElementById('selected-user-avatar').style.background=avatarColors[name.charCodeAt(0)%avatarColors.length];
+    document.getElementById('selected-user-name').textContent=name||'—';
+    document.getElementById('selected-user-meta').textContent=[phone,email].filter(Boolean).join(' · ')||'—';
+    document.getElementById('selected-user-id-badge').textContent='#'+id;
+
+    // Hide dropdown
+    document.getElementById('user-dropdown').style.display='none';
+    fe('err-user-id','');
+  }
+
+  function clearUserSelection(){
+    selectedUserId=null;
+    document.getElementById('target-user-id').value='';
+    document.getElementById('user-search-input').value='';
+    document.getElementById('user-search-input').style.borderColor='';
+    document.getElementById('user-clear-btn').style.display='none';
+    document.getElementById('selected-user-badge').style.display='none';
+    document.getElementById('user-dropdown').style.display='none';
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click',function(e){
+    const field=document.getElementById('user-id-field');
+    if(field && !field.contains(e.target)){
+      document.getElementById('user-dropdown').style.display='none';
+    }
+  });
+
   // ── CHAR COUNT ────────────────────────────────────────────────────────────
   document.getElementById('notif-message').addEventListener('input',function(){
     document.getElementById('char-count').textContent=this.value.length;
@@ -77,8 +196,7 @@
   function validate(){
     let ok=true;
     if(currentTarget==='individual'){
-      const uid=document.getElementById('target-user-id').value.trim();
-      if(!uid||isNaN(uid)){ fe('err-user-id','Please enter a valid numeric user ID.'); ok=false; } else fe('err-user-id','');
+      if(!selectedUserId){ fe('err-user-id','Please select a user from the list.'); ok=false; } else fe('err-user-id','');
     }
     const title=document.getElementById('notif-title').value.trim();
     if(!title){ fe('err-title','Please enter a title.'); ok=false; } else fe('err-title','');
@@ -105,7 +223,7 @@
       if(currentTarget==='broadcast'){
         res=await fetch(API.BROADCAST,{method:'POST',headers:H(),body:JSON.stringify({title,message,type})});
       } else {
-        const user_id=document.getElementById('target-user-id').value.trim();
+        const user_id=selectedUserId;
         res=await fetch(API.SEND,{method:'POST',headers:H(),body:JSON.stringify({title,message,type,user_id})});
       }
       if(res.ok){
@@ -113,7 +231,7 @@
         document.getElementById('send-success').classList.add('show');
         document.getElementById('success-sub').textContent=currentTarget==='broadcast'
           ?'Your broadcast has been sent to all users via In-App.'
-          :`Notification sent to user #${document.getElementById('target-user-id').value.trim()} via In-App.`;
+          :`Notification sent to ${document.getElementById('selected-user-name').textContent} (#${selectedUserId}) via In-App.`;
       } else {
         const d=await res.json();
         toast(d.detail||d.message||'Failed to send notification.','error');
@@ -125,7 +243,7 @@
   function resetCompose(){
     document.getElementById('compose-form').style.display='';
     document.getElementById('send-success').classList.remove('show');
-    document.getElementById('target-user-id').value='';
+    clearUserSelection();
     document.getElementById('notif-title').value='';
     document.getElementById('notif-message').value='';
     document.getElementById('notif-type').value='INFO';

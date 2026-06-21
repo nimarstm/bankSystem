@@ -53,7 +53,7 @@
       <thead><tr><th>Customer</th><th>Type</th><th>Amount</th><th>Duration</th><th>Risk</th><th>Status</th><th>Date</th></tr></thead>
       <tbody>${list.map(r=>`
         <tr onclick="openRequestDrawer('${r.id}')">
-          <td>${r.customer?.fullname||'—'}</td>
+          <td>${r.customer_name}</td>
           <td><span class="badge ${r.loan_type}">${r.loan_type}</span></td>
           <td style="font-weight:600;">${fmt(r.amount)}</td>
           <td>${r.duration_months}mo</td>
@@ -71,7 +71,7 @@
       <thead><tr><th>Customer</th><th>Principal</th><th>Total Payable</th><th>Monthly</th><th>Duration</th><th>Paid</th><th>Status</th><th>Started</th></tr></thead>
       <tbody>${list.map(l=>`
         <tr onclick="openLoanDrawer('${l.id}')">
-          <td>${l.customer?.fullname||'—'}</td>
+          <td>${l.customer_name}</td>
           <td style="font-weight:600;">${fmt(l.principal_amount)}</td>
           <td>${fmt(l.total_payable)}</td>
           <td>${fmt(l.monthly_installment)}</td>
@@ -189,14 +189,14 @@
           <span class="badge ${r.status}">${r.status.replace('_',' ')}</span>
         </div>
         <div style="font-family:'DM Serif Display',serif;font-size:30px;color:var(--navy);">€${Number(r.amount||0).toLocaleString()}</div>
-        <div style="font-size:13px;color:var(--text-3);margin-top:4px;">${r.duration_months} months · ${r.customer?.fullname||'—'}</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:4px;">${r.duration_months} months · ${r.customer_name}</div>
       </div>
       <div class="detail-grid">
         <div class="detail-cell"><div class="detail-label">Monthly Income</div><div class="detail-val">€${Number(r.monthly_income||0).toLocaleString()}</div></div>
         <div class="detail-cell"><div class="detail-label">Existing Debt</div><div class="detail-val">€${Number(r.existing_debt||0).toLocaleString()}</div></div>
         <div class="detail-cell"><div class="detail-label">Risk Score</div><div class="detail-val">${riskBar(r.risk_score)}</div></div>
         <div class="detail-cell"><div class="detail-label">Submitted</div><div class="detail-val">${r.created_at?new Date(r.created_at).toLocaleDateString('en-DE'):'—'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Customer ID</div><div class="detail-val">${r.customer?.id||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Customer ID</div><div class="detail-val">${r.customer_id}</div></div>
         <div class="detail-cell"><div class="detail-label">Manager Note</div><div class="detail-val">${r.manager_note||'—'}</div></div>
       </div>`;
     const btns=[];
@@ -231,7 +231,7 @@
       <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);">
         <span class="badge ${l.status}" style="margin-bottom:8px;display:inline-flex;">${l.status}</span>
         <div style="font-family:'DM Serif Display',serif;font-size:30px;color:var(--navy);">${fmt(l.principal_amount)}</div>
-        <div style="font-size:13px;color:var(--text-3);margin-top:4px;">${l.customer?.fullname||'—'} · ${l.duration_months} months</div>
+        <div style="font-size:13px;color:var(--text-3);margin-top:4px;">${l.customer_name} · ${l.duration_months} months</div>
       </div>
       <div style="background:var(--bg);border-radius:var(--radius-sm);padding:1rem 1.25rem;margin-bottom:1.25rem;">
         <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:8px;">
@@ -249,7 +249,7 @@
         <div class="detail-cell"><div class="detail-label">Interest Rate</div><div class="detail-val">${l.interest_rate}%</div></div>
         <div class="detail-cell"><div class="detail-label">Monthly Installment</div><div class="detail-val">${fmt(l.monthly_installment)}</div></div>
         <div class="detail-cell"><div class="detail-label">Started</div><div class="detail-val">${l.started_at?new Date(l.started_at).toLocaleDateString('en-DE'):'—'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Customer</div><div class="detail-val">${l.customer?.fullname||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Customer</div><div class="detail-val">${l.customer_name}</div></div>
       </div>`;
     if(l.status==='ACTIVE'){
       document.getElementById('drawer-footer').innerHTML=`

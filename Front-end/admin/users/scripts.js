@@ -323,10 +323,116 @@
     finally{ btn.disabled=false; spin.style.display='none'; }
   }
 
-  ['block-modal','pw-modal','role-modal'].forEach(id=>{
+  ['block-modal','pw-modal','role-modal','add-user-modal'].forEach(id=>{
     document.getElementById(id).addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
   });
   document.getElementById('search').addEventListener('keydown',e=>{ if(e.key==='Enter') loadUsers(1); });
+
+  function fe(id, message){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.textContent = message;
+    if(message){
+      el.style.display = 'block';
+      el.style.color = 'var(--danger)';
+      el.style.fontSize = '12px';
+      el.style.marginTop = '4px';
+    } else{
+      el.style.display = 'none';
+    }
+  }
+
+  // ── ADD USER ──────────────────────────────────────────────────────────────
+  function openAddUserModal(){
+    ['au-fullname','au-phone','au-email','au-national-code','au-password'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('au-role').value='customer';
+    ['err-au-fullname','err-au-phone','err-au-email','err-au-national-code','err-au-password'].forEach(id=>fe(id,''));
+    document.getElementById('add-user-error').style.display='none';
+    document.getElementById('add-user-modal').classList.add('show');
+    setTimeout(()=>document.getElementById('au-fullname').focus(),100);
+  }
+
+  function closeAddUserModal(){ document.getElementById('add-user-modal').classList.remove('show'); }
+
+  async function confirmAddUser(){
+    ['err-au-fullname','err-au-phone','err-au-email','err-au-national-code','err-au-password'].forEach(id=>fe(id,''));
+    document.getElementById('add-user-error').style.display='none';
+
+    const fullname     = document.getElementById('au-fullname').value.trim();
+    const phone        = document.getElementById('au-phone').value.trim();
+    const email        = document.getElementById('au-email').value.trim();
+    const nationalCode = document.getElementById('au-national-code').value.trim();
+    const password     = document.getElementById('au-password').value;
+    const role         = document.getElementById('au-role').value;
+
+    let ok=true;
+    if(fullname.length<3)                         { fe('err-au-fullname','Full name must be at least 3 characters.'); ok=false; }
+    if(!/^\+?[\d\s\-]{7,15}$/.test(phone))       { fe('err-au-phone','Enter a valid phone number.'); ok=false; }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ fe('err-au-email','Enter a valid email address.'); ok=false; }
+    if(!/^\d{10}$/.test(nationalCode))            { fe('err-au-national-code','Must be exactly 10 digits.'); ok=false; }
+    if(password.length<8)                         { fe('err-au-password','Password must be at least 8 characters.'); ok=false; }
+    if(!ok) return;
+
+    const btn=document.getElementById('add-user-btn');
+    const spin=document.getElementById('add-user-spin');
+    const icon=document.getElementById('add-user-icon');
+    const txt=document.getElementById('add-user-text');
+    btn.disabled=true; spin.style.display='block'; icon.style.display='none'; txt.textContent='Creating…';
+
+    try{
+      // Step 1: Register the user
+      const res=await fetch('/api/v1/users/register/',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({fullname,phone,email,national_code:nationalCode,password}),
+      });
+      const data=await res.json();
+
+      if(!res.ok){
+        // Map backend field errors to the correct input
+        const fieldMap={
+          phone:'err-au-phone',
+          email:'err-au-email',
+          national_code:'err-au-national-code',
+          fullname:'err-au-fullname',
+          password:'err-au-password',
+        };
+        let handled=false;
+        Object.entries(fieldMap).forEach(([key,errId])=>{
+          if(data[key]){ fe(errId,Array.isArray(data[key])?data[key][0]:data[key]); handled=true; }
+        });
+        if(!handled){
+          document.getElementById('add-user-error-text').textContent=data.detail||data.message||'Registration failed.';
+          document.getElementById('add-user-error').style.display='flex';
+        }
+        return;
+      }
+
+      // Step 2: Change role if not customer
+      const userId=data.id||data.user_id;
+      if(role!=='customer'&&userId){
+        try{
+          await fetch(API.ROLE(userId),{
+            method:'POST',headers:H(),
+            body:JSON.stringify({primary_role:role}),
+          });
+        } catch{ /* non-critical — user created, role change failed */ }
+      }
+
+      toast(`User "${fullname}" created successfully!`);
+      closeAddUserModal();
+      loadUsers(1);
+
+    } catch {
+      document.getElementById('add-user-error-text').textContent='Network error. Please try again.';
+      document.getElementById('add-user-error').style.display='flex';
+    } finally {
+      btn.disabled=false; spin.style.display='none'; icon.style.display=''; txt.textContent='Create User';
+    }
+  }
+
+  // Enter key in add user modal
+  document.getElementById('au-password').addEventListener('keydown',e=>{ if(e.key==='Enter') confirmAddUser(); });
 
   async function logout(){
     try{await fetch(API.LOGOUT,{method:'POST',headers:H(),body:JSON.stringify({refresh_token:refresh})});}catch{}

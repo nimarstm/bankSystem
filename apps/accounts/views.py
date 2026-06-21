@@ -96,6 +96,7 @@ class AdminAccountListView(ListAPIView):
     serializer_class = AccountDetailSerializer
     permission_classes = [IsAuthenticated, IsBankStaff]
 
+
     def get_queryset(self):
         params = AdminAccountFilterSerializer(
             data=self.request.query_params
@@ -103,22 +104,20 @@ class AdminAccountListView(ListAPIView):
         params.is_valid(raise_exception=True)
         f = params.validated_data
 
-        qs = Account.objects.select_related(
-            "customer", "bank"
-        ).all()
+        qs = Account.objects.all()
 
-        if f.get("customer_id"):
-            qs = qs.filter(customer_id=f["customer_id"])
-        if f.get("bank_id"):
-            qs = qs.filter(bank_id=f["bank_id"])
+        #if f.get("customer_id"):
+        #    qs = qs.filter(customer_id=f["customer_id"])
+        #if f.get("bank_id"):
+        #    qs = qs.filter(bank_id=f["bank_id"])
         if f.get("status"):
             qs = qs.filter(status=f["status"])
         if f.get("type"):
             qs = qs.filter(type=f["type"])
         if f.get("currency"):
             qs = qs.filter(currency=f["currency"])
-        if "is_primary" in f:
-            qs = qs.filter(is_primary=f["is_primary"])
+        #if "is_primary" in f:
+        #    qs = qs.filter(is_primary=f["is_primary"])
         if f.get("search"):
             q = f["search"]
             qs = qs.filter(

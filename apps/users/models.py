@@ -92,6 +92,9 @@ class UserProfile(models.Model):
 
     birth_date = models.DateField(blank=True, null=True)
 
+    #TODO: write enum class for this
+    gender = models.CharField(max_length=100, blank=True, null=True)
+
     avatar = models.ImageField(
         upload_to="avatars/",
         blank=True,

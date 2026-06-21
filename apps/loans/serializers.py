@@ -35,11 +35,15 @@ class LoanSerializer(serializers.ModelSerializer):
     customer_name = serializers.CharField(
         source="customer.fullname", read_only=True
     )
+    customer_id = serializers.CharField(
+        source="customer.id", read_only=True
+    )
 
     class Meta:
         model = Loan
         fields = [
             "id",
+            "customer_id",
             "customer",
             "customer_name",
             "loan_request",

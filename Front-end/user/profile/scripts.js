@@ -68,6 +68,12 @@
       document.getElementById('p-national-code').value= me.national_code||'';
       document.getElementById('p-date-joined').value  = me.date_joined?new Date(me.date_joined).toLocaleDateString('en-DE'):'—';
 
+      document.getElementById('p-dob').value         = prof.date_of_birth||'';
+      document.getElementById('p-gender').value      = prof.gender||'';
+      document.getElementById('p-address').value     = prof.address||'';
+      document.getElementById('p-city').value        = prof.city||'';
+      document.getElementById('p-postal-code').value = prof.postal_code||'';
+
       if(!me.is_verified){
         document.getElementById('profile-verified-badge').textContent='Unverified';
         document.getElementById('profile-verified-badge').style.background='var(--warning-bg)';
@@ -83,6 +89,12 @@
     const email    = document.getElementById('p-email').value.trim();
     if(!fullname||fullname.length<3){ toast('Full name must be at least 3 characters','error'); return; }
 
+    const dob        = document.getElementById('p-dob').value;
+    const gender      = document.getElementById('p-gender').value;
+    const address     = document.getElementById('p-address').value.trim();
+    const city        = document.getElementById('p-city').value.trim();
+    const postalCode  = document.getElementById('p-postal-code').value.trim();
+
     const btn=document.getElementById('profile-save-btn');
     const spin=document.getElementById('profile-spin');
     const icon=document.getElementById('profile-save-icon');
@@ -90,7 +102,19 @@
     btn.disabled=true; spin.style.display='block'; icon.style.display='none'; txt.textContent='Saving…';
 
     try{
-      const res = await fetch(API.PROFILE,{method:'PATCH',headers:H(),body:JSON.stringify({fullname,email})});
+      // fullname/email live on the User record → PATCH /me/profile/ (also accepts these)
+      // address/city/country/postal_code/dob/gender live on the Profile record
+      const res = await fetch(API.PROFILE,{
+        method:'PATCH',
+        headers:H(),
+        body:JSON.stringify({
+          fullname, email,
+          date_of_birth: dob || null,
+          gender: gender || null,
+          address, city,
+          postal_code: postalCode,
+        }),
+      });
       const data = await res.json();
       if(res.ok){
         showMsg('profile-success',true);

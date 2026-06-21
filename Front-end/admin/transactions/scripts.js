@@ -46,7 +46,7 @@
             <i class="ti ${typeIcons[t.type]||'ti-arrows-right-left'}"></i>
           </div>
           <div style="flex:1;">
-            <div style="font-size:13.5px;font-weight:600;">${(t.type||'').replace(/_/g,' ')} · ${t.account?.customer?.fullname||'—'}</div>
+            <div style="font-size:13.5px;font-weight:600;">${(t.type||'').replace(/_/g,' ')} · ${t.customer_name}</div>
             <div style="font-size:12px;color:var(--text-3);font-family:monospace;">${t.reference_number}</div>
           </div>
           <div style="font-size:15px;font-weight:700;color:${isCredit?'var(--success)':'var(--danger)'};">${isCredit?'+':'-'}${fmt(t.amount)}</div>
@@ -89,7 +89,7 @@
               <div class="mono" style="color:var(--text-3);">${t.reference_number||'—'}</div>
             </div>
           </div></td>
-          <td>${t.account?.customer?.fullname||'—'}</td>
+          <td>${t.customer_name}</td>
           <td><span class="tx-amount ${isCredit?'credit':'debit'}">${isCredit?'+':'-'}${fmt(t.amount)}</span></td>
           <td><span class="badge ${t.status}">${t.status}</span></td>
           <td style="font-size:12px;color:var(--text-3);">${d.toLocaleDateString('en-DE')}<br>${d.toLocaleTimeString('en-DE',{hour:'2-digit',minute:'2-digit'})}</td>
@@ -144,8 +144,8 @@
       </div>
       <div class="detail-grid">
         <div class="detail-cell"><div class="detail-label">Reference</div><div class="detail-val" style="font-family:monospace;font-size:11px;">${t.reference_number||'—'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Account Holder</div><div class="detail-val">${t.account?.customer?.fullname||'—'}</div></div>
-        <div class="detail-cell"><div class="detail-label">Account No.</div><div class="detail-val" style="font-family:monospace;font-size:12px;">${t.account?.account_number||'—'}</div></div>
+        <div class="detail-cell"><div class="detail-label">Account Holder</div><div class="detail-val">${t.customer_name}</div></div>
+        <div class="detail-cell"><div class="detail-label">Account No.</div><div class="detail-val" style="font-family:monospace;font-size:12px;">${t.account_number}</div></div>
         <div class="detail-cell"><div class="detail-label">Fee</div><div class="detail-val">€${Number(t.fee||0).toFixed(2)}</div></div>
         <div class="detail-cell"><div class="detail-label">Date</div><div class="detail-val">${d.toLocaleDateString('en-DE')}</div></div>
         <div class="detail-cell"><div class="detail-label">Time</div><div class="detail-val">${d.toLocaleTimeString('en-DE')}</div></div>

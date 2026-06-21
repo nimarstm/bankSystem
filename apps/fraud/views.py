@@ -13,9 +13,12 @@ class FraudReportListView(APIView):
         return Response([
             {
                 "id": r.id,
+                "user_id": r.user_id,
                 "score": r.score,
                 "decision": r.decision,
-                "transaction_id": r.transaction_id
+                "transaction_id": r.transaction_id,
+                "reason": r.reason,
+                "created_at": r.created_at,
             }
             for r in reports
         ])
