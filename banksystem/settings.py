@@ -92,6 +92,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
-OLLAMA_MODEL = "llama3.1"
+OLLAMA_MODEL = "qwen3:14b"
 
 OLLAMA_TIMEOUT = 60

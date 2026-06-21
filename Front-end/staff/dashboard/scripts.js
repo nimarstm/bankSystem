@@ -30,7 +30,7 @@
     if(isManager){
       document.querySelectorAll('.manager-only').forEach(el=>el.style.display='flex');
       document.getElementById('second-card-title').innerHTML = '<i class="ti ti-coin" style="font-size:16px;color:var(--warning);"></i> Pending Loan Requests';
-      document.getElementById('second-card-link').href = 'staff-loans.html';
+      document.getElementById('second-card-link').href = '../../ststaff-loans.html';
       document.getElementById('second-card-link').textContent = 'Review all';
       document.getElementById('user-avatar').style.background = 'linear-gradient(135deg,#f59e0b,#d97706)';
     }
@@ -57,8 +57,8 @@
         <a class="list-item" href="staff-accounts.html">
           <div class="list-icon ${a.status==='ACTIVE'?'blue':'red'}"><i class="ti ti-wallet"></i></div>
           <div>
-            <div class="list-name">${a.customer?.fullname||'—'}</div>
-            <div class="list-meta">${a.account_number||'—'} · ${a.type}</div>
+            <div class="list-name">${a.customer_name}</div>
+            <div class="list-meta">${a.account_number} · ${a.type}</div>
           </div>
           <div class="list-right">
             <div class="list-amount">${fmt(a.balance)}</div>
@@ -72,7 +72,7 @@
   async function loadTransactions(){
     try{
       const today=new Date().toISOString().slice(0,10);
-      const res=await fetch(`${API.TRANSACTIONS}?date_from=${today}&date_to=${today}`,{headers:H()});
+      const res=await fetch(API.TRANSACTIONS,{headers:H()});
       const data=await res.json();
       const list=Array.isArray(data)?data:(data.results||[]);
       document.getElementById('kpi-tx').textContent = list.length.toLocaleString();
@@ -94,30 +94,6 @@
     } catch { document.getElementById('kpi-tx').textContent='—'; }
   }
 
-  // ── LOAD PENDING LOANS (manager) ──────────────────────────────────────────
-  async function loadPendingLoans(){
-    if(!isManager) return;
-    try{
-      const res=await fetch(API.LOAN_PENDING,{headers:H()});
-      const data=await res.json();
-      const list=Array.isArray(data)?data:(data.results||[]);
-      document.getElementById('kpi-loans').textContent = list.length.toLocaleString();
-      document.getElementById('pending-badge').textContent = list.length;
-      if(!list.length){ document.getElementById('second-card-body').innerHTML='<div class="empty"><i class="ti ti-circle-check"></i>No pending loans</div>'; return; }
-      document.getElementById('second-card-body').innerHTML=list.slice(0,5).map(r=>`
-        <a class="list-item" href="staff-loans.html">
-          <div class="list-icon amber"><i class="ti ti-coin"></i></div>
-          <div>
-            <div class="list-name">${r.customer?.fullname||'—'}</div>
-            <div class="list-meta">${(r.loan_type||'').replace(/_/g,' ')} · ${r.duration_months}mo · Risk: ${r.risk_score||'?'}</div>
-          </div>
-          <div class="list-right">
-            <div class="list-amount">${fmt(r.amount)}</div>
-            <span class="badge PENDING">${r.status?.replace('_',' ')||'—'}</span>
-          </div>
-        </a>`).join('');
-    } catch { document.getElementById('kpi-loans').textContent='—'; }
-  }
 
   // ── LOAD CUSTOMERS ────────────────────────────────────────────────────────
   async function loadCustomers(){

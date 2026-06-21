@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>EliraPay — Staff · Loan Requests</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>EliraPay — Admin · Loans</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 <aside class="sidebar">
   <div class="sidebar-logo"><div class="sidebar-logo-icon"><i class="ti ti-building-bank"></i></div><span class="sidebar-logo-text">EliraPay</span></div>
-  <div class="role-badge"><i class="ti ti-crown"></i> Manager</div>
+  <div class="role-badge" id="role-badge"><i class="ti ti-id-badge"></i> <span id="role-label">Staff</span></div>
   <div class="sidebar-section">Overview</div>
   <a class="nav-item" href="../../staff/dashboard/staff-dashboard.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
   <div class="sidebar-section">Operations</div>
-  <a class="nav-item" href="../../staff/accounts/staff-accounts.html">a<i class="ti ti-wallet"></i> Accounts</a>
+  <a class="nav-item" href="../../staff/accounts/staff-accounts.html"><i class="ti ti-wallet"></i> Accounts</a>
   <a class="nav-item" href="../../staff/transactions/staff-transactions.html"><i class="ti ti-arrows-right-left"></i> Transactions</a>
-  <a class="nav-item active" href="../../staff/loans/staff-loans.html"><i class="ti ti-coin"></i> Loan Requests <span class="nav-badge" id="pending-badge">—</span></a>
+  <a class="nav-item active manager-only" id="nav-loans" href="../../staff/loans/staff-loans.html"><i class="ti ti-coin"></i> Loan Requests <span class="nav-badge" id="pending-badge">—</span></a>
+  <a class="nav-item" href="../../staff/installments/staff-installments.html"><i class="ti ti-receipt"></i> Installments</a>
   <div class="sidebar-section">Customer</div>
-  <a class="nav-item" href="../../staff/customers/staff-customers.html"><i class="ti ti-users"></i> Customers</a>
+  <a class="nav-item" href="../../staff/users/staff-users.html"><i class="ti ti-users"></i> Customers</a>
   <div class="sidebar-footer">
     <div class="sidebar-user">
-      <div class="user-avatar" id="sidebar-avatar">MG</div>
-      <div class="user-info"><div class="user-name" id="sidebar-name">Manager</div><div class="user-role-txt">Manager</div></div>
+      <div class="user-avatar" id="sidebar-avatar" style="background:linear-gradient(135deg,#10b981,#059669);">--</div>
+      <div class="user-info"><div class="user-name" id="sidebar-name">Staff</div><div class="user-role-txt" id="sidebar-role">Employee</div></div>
       <button class="logout-btn" onclick="logout()"><i class="ti ti-logout"></i></button>
     </div>
   </div>
@@ -31,15 +33,24 @@
 
 <div class="main">
   <div class="topbar">
-    <div class="topbar-left"><h1>Loan Requests</h1><p>Evaluate, approve or reject customer loan applications</p></div>
+    <div class="topbar-left"><h1>Loan Management</h1><p>Review requests and manage active loans</p></div>
     <a class="back-btn" href="../../staff/dashboard/staff-dashboard.html"><i class="ti ti-arrow-left"></i> Dashboard</a>
   </div>
   <div class="content">
+
     <div class="tab-bar">
-      <button class="tab-btn active" id="tab-pending"  onclick="switchTab('pending')"><i class="ti ti-clock"></i> Pending Review <span class="tab-count" id="cnt-pending">—</span></button>
-      <button class="tab-btn"        id="tab-all"      onclick="switchTab('all')"><i class="ti ti-list"></i> All Requests <span class="tab-count" id="cnt-all">—</span></button>
+      <button class="tab-btn active" id="tab-pending"   onclick="switchTab('pending')">
+        <i class="ti ti-clock"></i> Pending Review <span class="tab-count" id="cnt-pending">—</span>
+      </button>
+      <button class="tab-btn" id="tab-requests" onclick="switchTab('requests')">
+        <i class="ti ti-list"></i> All Requests <span class="tab-count" id="cnt-requests">—</span>
+      </button>
+      <button class="tab-btn" id="tab-loans"    onclick="switchTab('loans')">
+        <i class="ti ti-coin"></i> Active Loans <span class="tab-count" id="cnt-loans">—</span>
+      </button>
     </div>
 
+    <!-- PENDING REQUESTS -->
     <div class="panel active" id="panel-pending">
       <div class="table-card">
         <div class="table-hdr"><span class="table-hdr-title">Awaiting Review</span><span class="table-count" id="cnt-pending-lbl">—</span></div>
@@ -47,10 +58,52 @@
       </div>
     </div>
 
-    <div class="panel" id="panel-all">
+    <!-- ALL REQUESTS -->
+    <div class="panel" id="panel-requests">
+      <div class="filters-card">
+        <div class="filters-row">
+          <select class="filter-select" id="req-status">
+            <option value="">All Statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="UNDER_REVIEW">Under Review</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+          </select>
+          <select class="filter-select" id="req-type">
+            <option value="">All Types</option>
+            <option value="PERSONAL">Personal</option>
+            <option value="HOME">Home</option>
+            <option value="CAR">Car</option>
+            <option value="BUSINESS">Business</option>
+          </select>
+          <button class="btn-filter primary" onclick="loadRequests()"><i class="ti ti-filter"></i> Filter</button>
+          <button class="btn-filter ghost" onclick="document.getElementById('req-status').value='';document.getElementById('req-type').value='';loadRequests()"><i class="ti ti-refresh"></i> Reset</button>
+        </div>
+      </div>
       <div class="table-card">
-        <div class="table-hdr"><span class="table-hdr-title">All Requests</span><span class="table-count" id="cnt-all-lbl">—</span></div>
-        <div id="all-wrap"><div class="empty-state"><i class="ti ti-loader-2"></i><p>Loading…</p></div></div>
+        <div class="table-hdr"><span class="table-hdr-title">Loan Requests</span><span class="table-count" id="cnt-requests-lbl">—</span></div>
+        <div id="requests-wrap"><div class="empty-state"><i class="ti ti-loader-2"></i><p>Loading…</p></div></div>
+      </div>
+    </div>
+
+    <!-- ACTIVE LOANS -->
+    <div class="panel" id="panel-loans">
+      <div class="filters-card">
+        <div class="filters-row">
+          <select class="filter-select" id="loan-status">
+            <option value="">All Statuses</option>
+            <option value="ACTIVE">Active</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="DEFAULTED">Defaulted</option>
+            <option value="CLOSED">Closed</option>
+          </select>
+          <button class="btn-filter primary" onclick="loadLoans()"><i class="ti ti-filter"></i> Filter</button>
+          <button class="btn-filter ghost" onclick="document.getElementById('loan-status').value='';loadLoans()"><i class="ti ti-refresh"></i> Reset</button>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-hdr"><span class="table-hdr-title">Loans</span><span class="table-count" id="cnt-loans-lbl">—</span></div>
+        <div id="loans-wrap"><div class="empty-state"><i class="ti ti-loader-2"></i><p>Loading…</p></div></div>
       </div>
     </div>
   </div>
@@ -59,7 +112,10 @@
 <!-- DRAWER -->
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="loan-drawer">
-  <div class="drawer-header"><span class="drawer-title">Loan Request</span><button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x"></i></button></div>
+  <div class="drawer-header">
+    <span class="drawer-title" id="drawer-title">Loan Detail</span>
+    <button class="drawer-close" onclick="closeDrawer()"><i class="ti ti-x"></i></button>
+  </div>
   <div class="drawer-body" id="drawer-body"></div>
   <div class="drawer-footer" id="drawer-footer"></div>
 </div>

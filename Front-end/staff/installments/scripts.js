@@ -109,16 +109,13 @@
         <div class="detail-cell"><div class="detail-label">Loan ID</div><div class="detail-val" style="font-size:11px;font-family:monospace;">${i.id||'—'}</div></div>
         <div class="detail-cell"><div class="detail-label">Created</div><div class="detail-val">${i.created_at?new Date(i.created_at).toLocaleDateString('en-DE'):'—'}</div></div>
       </div>`;
-    if(i.status!=='PAID'){
-      document.getElementById('drawer-footer').innerHTML=`<button class="btn danger" onclick="openPenaltyModal()"><i class="ti ti-alert-circle"></i> Apply Penalty</button>`;
-    } else {
-      document.getElementById('drawer-footer').innerHTML=`<span style="font-size:12.5px;color:var(--text-3);">This installment has been paid.</span>`;
+    if(i.status=='PAID'){
+            document.getElementById('drawer-footer').innerHTML=`<span style="font-size:12.5px;color:var(--text-3);">This installment has been paid.</span>`;
     }
   }
 
   function closeDrawer(){document.getElementById('overlay').classList.remove('show');document.getElementById('inst-drawer').classList.remove('open');activeId=null;}
-  function openPenaltyModal(){document.getElementById('penalty-modal').classList.add('show');}
-  function closePenaltyModal(){document.getElementById('penalty-modal').classList.remove('show');}
+
 
   async function confirmPenalty(){
     const amount=parseFloat(document.getElementById('penalty-amount').value);
@@ -133,7 +130,6 @@
     finally{btn.disabled=false;spin.style.display='none';document.getElementById('penalty-amount').value='';}
   }
 
-  document.getElementById('penalty-modal').addEventListener('click',function(e){if(e.target===this)closePenaltyModal();});
 
   function mockInst(){
     return [
